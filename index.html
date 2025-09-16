@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Gaming Universe </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌟 GAMING HUB 🌟</h1>
+            <p>Klasyczne gry </p>
+        </div>
+
+        <div id="gameMenu" class="games-grid">
+            <div class="game-card">
+                <h3>🐍 Quantum Snake</h3>
+                <p>Klasyczny wąż w kosmicznej odslonie! Zbieraj energia-kule i unikaj kolizji w cyfrowej przestrzeni.</p>
+                <button class="play-btn" onclick="startGame('snake')">Rozpocznij Misję</button>
+            </div>
+
+            <div class="game-card">
+                <h3>🏓 Cyber Pong</h3>
+                <p>Retro tenis w holograficznej rzeczywistości! Odbijaj świetlną kulę energii.</p>
+                <button class="play-btn" onclick="startGame('pong')">Aktywuj</button>
+            </div>
+
+            <div class="game-card">
+                <h3>🧱 Neo Breakout</h3>
+                <p>Rozbijaj cyfrowe bloki w wirtualnej matrycy! Użyj swojej cyber-paletki.</p>
+                <button class="play-btn" onclick="startGame('breakout')">Włam się</button>
+            </div>
+
+            <div class="game-card">
+                <h3>🚀 Deep Space</h3>
+                <p>Lecisz przez kosmos pełen asteroid! Strzelaj laserami i przetrwaj w głębokiej przestrzeni.</p>
+                <button class="play-btn" onclick="startGame('asteroids')">Start Lotu</button>
+            </div>
+        </div>
+
+        
+        <div id="snakeGame" class="game-area">
+            <h2>🐍 QUANTUM SNAKE</h2>
+            <div class="instructions">
+                <strong>Sterowanie Cyborg:</strong> Użyj strzałek lub WASD do nawigacji
+            </div>
+            <div class="score" id="snakeScore">Energia: 0</div>
+            <canvas id="snakeCanvas" width="400" height="400"></canvas>
+            <div class="game-controls">
+                <button class="control-btn" onclick="resetSnake()">Reset Quantum</button>
+                <button class="back-btn" onclick="backToMenu()">Wyjście</button>
+            </div>
+        </div>
+
+        
+        <div id="pongGame" class="game-area">
+            <h2>🏓 CYBER PONG</h2>
+            <div class="instructions">
+                <strong>Kontrola Holo:</strong> Strzałki góra/dół lub W/S
+            </div>
+            <div class="score" id="pongScore">Człowiek: 0 | AI: 0</div>
+            <canvas id="pongCanvas" width="600" height="300"></canvas>
+            <div class="game-controls">
+                <button class="control-btn" onclick="resetPong()">Restart Systemu</button>
+                <button class="back-btn" onclick="backToMenu()">Wyjście</button>
+            </div>
+        </div>
+
+        
+        <div id="breakoutGame" class="game-area">
+            <h2>🧱 NEO BREAKOUT</h2>
+            <div class="instructions">
+                <strong>Cyber Interface:</strong> Strzałki lewo/prawo lub A/D
+            </div>
+            <div class="score" id="breakoutScore">Hack Points: 0 | System Lives: 3</div>
+            <canvas id="breakoutCanvas" width="500" height="400"></canvas>
+            <div class="game-controls">
+                <button class="control-btn" onclick="resetBreakout()">Reinicjalizacja</button>
+                <button class="back-btn" onclick="backToMenu()">Wyjście</button>
+            </div>
+        </div>
+
+        
+        <div id="asteroidsGame" class="game-area">
+            <h2>🚀 DEEP SPACE</h2>
+            <div class="instructions">
+                <strong>Pilot Controls:</strong> Strzałki (manewrowanie) | Spacja (laser)
+            </div>
+            <div class="score" id="asteroidsScore">Space Points: 0 | Ship Lives: 3</div>
+            <canvas id="asteroidsCanvas" width="600" height="400"></canvas>
+            <div class="game-controls">
+                <button class="control-btn" onclick="resetAsteroids()">Nowy Statek</button>
+                <button class="back-btn" onclick="backToMenu()">Powrót na Bazę</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="javascript.js"></script>
+</body>
+</html>
