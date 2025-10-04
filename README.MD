@@ -1,5 +1,44 @@
 # 🌟 GAMING HUB 🌟
+## Wersyfikacja
+**v0.00** : 
+- stworzenie podstawy strony + dodatkowe gry
 
+**v0.10** : 
+- Core/UX
+  - Dodany licznik startowy 3–2–1 (overlay “GO!”) przed rozpoczęciem każdej gry
+  - Przełącznik dźwięku w nagłówku (🔊/🔇)
+  - Subtelne wibracje na urządzeniach mobilnych przy punktach/trafieniach
+  - Lepsze zarządzanie pętlami gier (czyszczenie setInterval przy zmianie/wyjściu z gry)
+  - Usprawnione i stabilne cząsteczki tła (czyszczenie kontenera, stała liczba, losowe opóźnienia) 
+- Audio
+  - Wbudowany silnik SFX (WebAudio) – bez plików audio: click, pickup, hit, bounce, score, lose, shoot, explode, win
+  - Odblokowanie AudioContext po pierwszej interakcji użytkownika (wymóg przeglądarek)
+- Poprawki błędów i stabilność
+  - Usunięto przypadkowe mieszanie JS w CSS; rozdzielenie na index.html, style.css, javascript.js
+  - generateFood nie wywołuje się już przy starcie strony (tylko po init Snake) – koniec losowych crashy
+  - Zapobieganie domyślnej akcji spacji (scroll) w Asteroids
+  - Ujednolicone nasłuchiwanie klawiatury (normalizacja klawiszy, toLowerCase)
+- Snake (Quantum Snake)
+  - Blokada zawracania o 180° (nie można wejść głową w drugi segment)
+  - Jedzenie generowane na siatce, z pominięciem pozycji węża
+  - Czytelny licznik “Energia” i reset gry
+- Pong (Cyber Pong)
+  - Kolizje liczone z promieniem piłki (dokładniejsze odbicia od ścian i paletek)
+  - Odbicie zależne od miejsca trafienia w paletkę (kontrola kąta lotu)
+  - Reset piłki na środek z losowym kierunkiem po zdobyciu punktu
+  - Linia przerywana na środku, stabilizacja ruchu AI i ograniczenia ruchu paletek
+- Breakout (Neo Breakout)
+  - Siatka klocków z odstępami; dynamiczne kolory (HSL)
+  - Kolizje z uwzględnieniem promienia piłki + “spin” po trafieniu paletki
+  - 3 życia, komunikaty wygranej/przegranej, aktualizacja wyniku “Hack Points”
+- Asteroids (Deep Space)
+  - Tarcza bezwładności (tarcie 0.99), pełny wrap-around statku i pocisków
+  - Kolizje pocisk–asteroida, przyrost punktów, dźwięki trafień/eksplozji
+  - Reset statku po zderzeniu, 3 życia, automatyczne dorzucanie asteroid gdy zostanie ich zbyt mało
+- Dodatkowo
+  - Wariant “all-in-one” (jeden plik index.html) jako fallback do szybkiego uruchomienia lokalnie
+  - Uporządkowane funkcje globalne dla onclick (reset/return to menu), spójne nazewnictwo zmiennych i funkcji
+  
 ## Opis aplikacji
 
 **Gaming Universe** to interaktywna aplikacja webowa zawierająca kolekcję czterech klasycznych gier arkadowych w nowoczesnej, cyberpunkowej oprawie wizualnej. Aplikacja została stworzona jako rozrywkowa platforma do gier retro z futurystycznym designem.
