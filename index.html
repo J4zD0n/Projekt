@@ -34,11 +34,6 @@
         <p>Rozbijaj cyfrowe bloki w wirtualnej matrycy! Użyj swojej cyber-paletki.</p>
         <button class="play-btn" onclick="uiStart('breakout')">Włam się</button>
       </div>
-      <div class="game-card">
-        <h3>🚀 Deep Space</h3>
-        <p>Lecisz przez kosmos pełen asteroid! Strzelaj laserami i przetrwaj.</p>
-        <button class="play-btn" onclick="uiStart('asteroids')">Start Lotu</button>
-      </div>
     </div>
 
     <div id="snakeGame" class="game-area">
@@ -77,19 +72,6 @@
       <div class="game-controls">
         <button class="control-btn" onclick="resetBreakout()">Reinicjalizacja</button>
         <button class="back-btn" onclick="backToMenu()">Wyjście</button>
-      </div>
-    </div>
-
-    <div id="asteroidsGame" class="game-area">
-      <h2>🚀 DEEP SPACE</h2>
-      <div class="instructions">
-        <strong>Pilot Controls:</strong> Strzałki (manewrowanie) | Spacja (laser)
-      </div>
-      <div class="score" id="asteroidsScore">Space Points: 0 | Ship Lives: 3</div>
-      <canvas id="asteroidsCanvas" width="600" height="400"></canvas>
-      <div class="game-controls">
-        <button class="control-btn" onclick="resetAsteroids()">Nowy Statek</button>
-        <button class="back-btn" onclick="backToMenu()">Powrót na Bazę</button>
       </div>
     </div>
   </div>

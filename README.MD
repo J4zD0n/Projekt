@@ -39,6 +39,53 @@
   - Wariant “all-in-one” (jeden plik index.html) jako fallback do szybkiego uruchomienia lokalnie
   - Uporządkowane funkcje globalne dla onclick (reset/return to menu), spójne nazewnictwo zmiennych i funkcji
   
+**v0.15** :
+- Clean Code Implementation
+  - **Metoda 1: Single Responsibility Principle (gameStateManager)**
+    - Obiekt zarządzający stanem gry z jasno określonymi odpowiedzialnościami
+    - Metody: changeState(), handleStateTransition(), cleanupCurrentGame(), showMainMenu(), hideMenus()
+    - Każda funkcja ma jedną, konkretną odpowiedzialność
+    - Guard clauses dla wczesnego wyjścia z funkcji
+  - **Metoda 2: DRY - Don't Repeat Yourself (soundManager)**
+    - Centralna obsługa wszystkich dźwięków w aplikacji
+    - Eliminacja duplikacji kodu audio poprzez wspólną konfigurację soundConfigs
+    - Lazy loading AudioContext - inicjalizacja tylko gdy potrzebna
+    - Uniwersalna metoda play() obsługująca wszystkie dźwięki
+    - Metoda toggleMute() z automatyczną aktualizacją UI
+  - **Metoda 3: Input Validation & Sanitization (inputHandler)**
+    - Bezpieczna obsługa wejścia użytkownika z walidacją
+    - Sanityzacja klawiszy - usuwanie niebezpiecznych znaków
+    - Normalizacja klawiszy do akcji (keyMap)
+    - Zarządzanie stanem aktywnych klawiszy (activeKeys Set)
+    - Metoda shouldPreventDefault() zapobiegająca domyślnym akcjom przeglądarki
+- Refaktoryzacja kodu
+  - Zastosowanie wzorca modułowego dla lepszej organizacji kodu
+  - Meaningful names - opisowe nazwy zmiennych i funkcji
+  - Small functions - krótkie, skoncentrowane funkcje
+  - Early returns (guard clauses) dla lepszej czytelności
+  - Separation of concerns - oddzielenie logiki walidacji, dźwięku i stanu gry
+- Usunięte elementy
+  - **Całkowite usunięcie gry Deep Space (Asteroids)**
+    - Usunięta karta gry z menu głównego
+    - Usunięty obszar gry asteroidsGame z HTML
+    - Usunięte wszystkie funkcje: initAsteroids(), updateAsteroids(), drawAsteroids(), resetAsteroids(), shoot()
+    - Usunięte kontrolki dla Asteroids z event listenerów
+    - Zmniejszenie rozmiaru kodu o ~25%
+- Optymalizacja
+  - Zmniejszenie liczby gier z 4 do 3 dla lepszej wydajności
+  - Uproszczenie struktury HTML - mniej elementów DOM
+  - Czystszy grid layout dla 3 gier (lepsze responsywne skalowanie)
+  - Redukcja złożoności event listenerów
+- Stabilność i bezpieczeństwo
+  - Walidacja wszystkich inputów przed przetworzeniem
+  - Bezpieczne czyszczenie game loop przy zmianie gry
+  - Ochrona przed XSS poprzez sanityzację klawiszy
+  - Kontrolowane zarządzanie pamięcią (clearAll() dla inputHandler)
+- Dodatkowo
+  - Lepsza integracja trzech pozostałych gier z nowymi systemami
+  - Wszystkie gry korzystają teraz z centralnego soundManager
+  - Ujednolicona obsługa klawiszy przez inputHandler
+  - Spójne zarządzanie stanami przez gameStateManager
 ## Opis aplikacji
 
 **Gaming Universe** to interaktywna aplikacja webowa zawierająca kolekcję czterech klasycznych gier arkadowych w nowoczesnej, cyberpunkowej oprawie wizualnej. Aplikacja została stworzona jako rozrywkowa platforma do gier retro z futurystycznym designem.

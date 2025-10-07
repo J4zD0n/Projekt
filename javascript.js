@@ -1,619 +1,738 @@
-'use strict';
-
-function createParticles() {
-  const particlesContainer = document.getElementById('particles');
-  particlesContainer.innerHTML = '';
-  for (let i = 0; i < 20; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.animationDelay = Math.random() * 10 + 's';
-    particle.style.animationDuration = (10 + Math.random() * 5) + 's';
-    particlesContainer.appendChild(particle);
-  }
-}
-
-const AudioEngine = (() => {
-  let ctx = null;
-  let muted = false;
-
-  function ensureContext() {
-    if (!ctx) {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (Ctx) ctx = new Ctx();
+// ===== CLEAN CODE METODA 1: Single Responsibility - Zarządzanie stanem gry =====
+const gameStateManager = {
+    currentGame: null,
+    currentGameLoop: null,
+    gameStates: {
+        MENU: 'menu',
+        PLAYING: 'playing',
+        PAUSED: 'paused',
+        GAME_OVER: 'gameOver'
+    },
+    currentState: 'menu',
+    
+    // Czytelna metoda zmiany stanu
+    changeState(newState) {
+        // Guard clause - wczesne wyjście
+        if (!Object.values(this.gameStates).includes(newState)) {
+            console.error(`Invalid state: ${newState}`);
+            return false;
+        }
+        
+        this.currentState = newState;
+        this.handleStateTransition(newState);
+        return true;
+    },
+    
+    // Obsługa przejść między stanami
+    handleStateTransition(state) {
+        switch(state) {
+            case this.gameStates.MENU:
+                this.cleanupCurrentGame();
+                this.showMainMenu();
+                break;
+            case this.gameStates.PLAYING:
+                this.hideMenus();
+                break;
+            case this.gameStates.GAME_OVER:
+                this.cleanupCurrentGame();
+                break;
+        }
+    },
+    
+    // Pomocnicze metody o jasnych nazwach
+    cleanupCurrentGame() {
+        if (this.currentGameLoop) {
+            clearInterval(this.currentGameLoop);
+            this.currentGameLoop = null;
+        }
+        this.currentGame = null;
+    },
+    
+    showMainMenu() {
+        document.getElementById('gameMenu').style.display = 'grid';
+        document.querySelectorAll('.game-area').forEach(area => {
+            area.classList.remove('active');
+        });
+    },
+    
+    hideMenus() {
+        document.getElementById('gameMenu').style.display = 'none';
     }
-    if (ctx && ctx.state === 'suspended') ctx.resume();
-  }
-
-  function beep({ frequency = 440, type = 'sine', duration = 0.06, volume = 0.2, attack = 0.005, decay = 0.12, detune = 0 } = {}) {
-    if (muted) return;
-    ensureContext();
-    if (!ctx) return;
-    const t = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(frequency, t);
-    if (detune) osc.detune.setValueAtTime(detune, t);
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(volume, t + attack);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay + duration);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(t);
-    osc.stop(t + attack + decay + duration + 0.05);
-  }
-
-  function play(name) {
-    const map = {
-      click:   { frequency: 700, type: 'square',  duration: 0.03, volume: 0.15 },
-      pickup:  { frequency: 880, type: 'triangle',duration: 0.06, volume: 0.22 },
-      hit:     { frequency: 200, type: 'sawtooth',duration: 0.08, volume: 0.2 },
-      bounce:  { frequency: 520, type: 'square',  duration: 0.05, volume: 0.16 },
-      score:   { frequency: 1200,type: 'triangle',duration: 0.09, volume: 0.22 },
-      lose:    { frequency: 140, type: 'sine',    duration: 0.18, volume: 0.28 },
-      shoot:   { frequency: 950, type: 'sawtooth',duration: 0.05, volume: 0.15, detune: -300 },
-      explode: { frequency: 90,  type: 'square',  duration: 0.25, volume: 0.3 },
-      win:     { frequency: 1000,type: 'square',  duration: 0.18, volume: 0.22 },
-    };
-    beep(map[name] || {});
-  }
-
-  return {
-    unlock: ensureContext,
-    play,
-    setMuted: (m) => { muted = m; },
-    isMuted: () => muted
-  };
-})();
-
-const countdownEl = document.getElementById('countdown');
-function showCountdown(onDone) {
-  if (!countdownEl) { onDone && onDone(); return; }
-  let n = 3;
-  countdownEl.classList.remove('hidden');
-  countdownEl.textContent = n;
-  const iv = setInterval(() => {
-    n--;
-    if (n <= 0) {
-      countdownEl.textContent = 'GO!';
-      AudioEngine.play('score');
-      setTimeout(() => {
-        countdownEl.classList.add('hidden');
-        countdownEl.textContent = '';
-        clearInterval(iv);
-        onDone && onDone();
-      }, 350);
-    } else {
-      AudioEngine.play('click');
-      countdownEl.textContent = n;
-    }
-  }, 650);
-}
-
-function vibrate(ms = 40) {
-  if (navigator.vibrate) navigator.vibrate(ms);
-}
-
-let currentGame = null;
-const gameLoops = {};
-
-function startGame(gameType) {
-  document.getElementById('gameMenu').style.display = 'none';
-  document.querySelectorAll('.game-area').forEach(a => a.classList.remove('active'));
-  document.getElementById(gameType + 'Game').classList.add('active');
-  currentGame = gameType;
-  Object.keys(gameLoops).forEach(k => { clearInterval(gameLoops[k]); gameLoops[k] = null; });
-
-  showCountdown(() => {
-    if (gameType === 'snake') initSnake();
-    else if (gameType === 'pong') initPong();
-    else if (gameType === 'breakout') initBreakout();
-    else if (gameType === 'asteroids') initAsteroids();
-  });
-}
-
-function backToMenu() {
-  Object.keys(gameLoops).forEach(k => { clearInterval(gameLoops[k]); gameLoops[k] = null; });
-  document.getElementById('gameMenu').style.display = 'grid';
-  document.querySelectorAll('.game-area').forEach(a => a.classList.remove('active'));
-  currentGame = null;
-}
-
-window.uiStart = (game) => {
-  AudioEngine.unlock();
-  AudioEngine.play('click');
-  startGame(game);
 };
 
-// SNAKE GAME
-let snake, food, direction, snakeScore;
-const SNAKE_STEP = 20;
+// ===== CLEAN CODE METODA 2: DRY - Centralna obsługa dźwięków =====
+const soundManager = {
+    audioContext: null,
+    isMuted: false,
+    masterVolume: 0.5,
+    
+    // Konfiguracja dźwięków w jednym miejscu - DRY principle
+    soundConfigs: {
+        click: { frequency: 200, duration: 0.1, type: 'square' },
+        pickup: { frequency: 800, duration: 0.2, type: 'sine' },
+        hit: { frequency: 150, duration: 0.3, type: 'sawtooth' },
+        bounce: { frequency: 400, duration: 0.1, type: 'sine' },
+        score: { frequency: 600, duration: 0.3, type: 'sine' },
+        lose: { frequency: 100, duration: 0.6, type: 'square' },
+        shoot: { frequency: 300, duration: 0.15, type: 'triangle' },
+        explode: { frequency: 80, duration: 0.4, type: 'sawtooth' },
+        win: { frequency: 1000, duration: 0.5, type: 'sine' }
+    },
+    
+    // Inicjalizacja z lazy loading
+    init() {
+        if (this.audioContext) return;
+        
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            return true;
+        } catch (error) {
+            console.error('Audio init failed:', error);
+            return false;
+        }
+    },
+    
+    // Główna metoda odtwarzania - unikamy duplikacji kodu
+    play(soundName, customVolume = 1) {
+        // Multiple guard clauses dla czytelności
+        if (this.isMuted) return;
+        if (!this.audioContext) this.init();
+        if (!this.soundConfigs[soundName]) return;
+        
+        const config = this.soundConfigs[soundName];
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.type = config.type;
+        oscillator.frequency.value = config.frequency;
+        gainNode.gain.value = this.masterVolume * customVolume;
+        
+        // Fade out dla płynności
+        gainNode.gain.exponentialRampToValueAtTime(
+            0.01, 
+            this.audioContext.currentTime + config.duration
+        );
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + config.duration);
+    },
+    
+    // Metoda toggle z jasną nazwą
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        const btn = document.getElementById('soundToggle');
+        if (btn) {
+            btn.textContent = this.isMuted ? '🔇 Dźwięk: OFF' : '🔊 Dźwięk: ON';
+        }
+        return this.isMuted;
+    }
+};
 
+// ===== CLEAN CODE METODA 3: Input Validation - Bezpieczna obsługa wejścia =====
+const inputHandler = {
+    activeKeys: new Set(),
+    
+    // Mapowanie klawiszy - separation of concerns
+    keyMap: {
+        'ArrowUp': 'up', 'ArrowDown': 'down', 
+        'ArrowLeft': 'left', 'ArrowRight': 'right',
+        'w': 'up', 'W': 'up',
+        's': 'down', 'S': 'down',
+        'a': 'left', 'A': 'left',
+        'd': 'right', 'D': 'right',
+        ' ': 'shoot', 'Space': 'shoot',
+        'Enter': 'confirm', 'Escape': 'pause',
+        'p': 'pause', 'P': 'pause'
+    },
+    
+    // Sanityzacja i walidacja klawisza
+    sanitizeKey(key) {
+        if (typeof key !== 'string') return '';
+        // Ograniczenie długości i usunięcie niebezpiecznych znaków
+        return key.substring(0, 20).replace(/[<>\"\']/g, '');
+    },
+    
+    // Normalizacja klawisza do akcji
+    normalizeKey(key) {
+        const sanitized = this.sanitizeKey(key);
+        return this.keyMap[sanitized] || sanitized.toLowerCase();
+    },
+    
+    // Obsługa keydown z walidacją
+    handleKeyDown(event) {
+        const key = this.normalizeKey(event.key);
+        
+        // Zapobieganie wielokrotnemu wywołaniu
+        if (this.activeKeys.has(key)) return key;
+        
+        this.activeKeys.add(key);
+        
+        // Zapobieganie domyślnym akcjom dla niektórych klawiszy
+        if (this.shouldPreventDefault(event.key)) {
+            event.preventDefault();
+        }
+        
+        return key;
+    },
+    
+    // Obsługa keyup
+    handleKeyUp(event) {
+        const key = this.normalizeKey(event.key);
+        this.activeKeys.delete(key);
+        return key;
+    },
+    
+    // Określenie czy zapobiec domyślnej akcji
+    shouldPreventDefault(key) {
+        const preventKeys = [' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        return preventKeys.includes(key);
+    },
+    
+    // Sprawdzenie czy klawisz jest wciśnięty
+    isPressed(action) {
+        return this.activeKeys.has(action);
+    },
+    
+    // Czyszczenie stanu
+    clearAll() {
+        this.activeKeys.clear();
+    }
+};
+
+// ===== ISTNIEJĄCY KOD GRY Z INTEGRACJĄ CLEAN CODE =====
+
+// Zmienne globalne
+let currentGame = null;
+let snakeGame, pongGame, breakoutGame;
+
+// Inicjalizacja cząsteczek
+function initParticles() {
+    const container = document.getElementById('particles');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        container.appendChild(particle);
+    }
+}
+
+// Funkcja startująca grę z UI
+function uiStart(game) {
+    soundManager.play('click');
+    gameStateManager.changeState('playing');
+    
+    // Ukryj menu
+    document.getElementById('gameMenu').style.display = 'none';
+    
+    // Pokaż odpowiednią grę
+    document.querySelectorAll('.game-area').forEach(area => {
+        area.classList.remove('active');
+    });
+    
+    // Licznik startowy
+    showCountdown(() => {
+        switch(game) {
+            case 'snake':
+                document.getElementById('snakeGame').classList.add('active');
+                initSnake();
+                break;
+            case 'pong':
+                document.getElementById('pongGame').classList.add('active');
+                initPong();
+                break;
+            case 'breakout':
+                document.getElementById('breakoutGame').classList.add('active');
+                initBreakout();
+                break;
+        }
+        gameStateManager.currentGame = game;
+    });
+}
+
+// Pokazanie licznika
+function showCountdown(callback) {
+    const countdown = document.getElementById('countdown');
+    countdown.classList.remove('hidden');
+    let count = 3;
+    
+    const interval = setInterval(() => {
+        if (count > 0) {
+            countdown.textContent = count;
+            soundManager.play('click');
+            count--;
+        } else {
+            countdown.textContent = 'GO!';
+            soundManager.play('score');
+            setTimeout(() => {
+                countdown.classList.add('hidden');
+                callback();
+            }, 500);
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
+// Powrót do menu
+function backToMenu() {
+    soundManager.play('click');
+    gameStateManager.changeState('menu');
+    inputHandler.clearAll();
+}
+
+// ===== SNAKE GAME =====
 function initSnake() {
-  const canvas = document.getElementById('snakeCanvas');
-  const ctx = canvas.getContext('2d');
-
-  snake = [{ x: 200, y: 200 }];
-  direction = { x: 0, y: 0 };
-  snakeScore = 0;
-
-  generateFood();
-  updateSnakeScore();
-
-  if (gameLoops.snake) clearInterval(gameLoops.snake);
-  gameLoops.snake = setInterval(updateSnake, 100);
-
-  drawSnake(ctx);
+    const canvas = document.getElementById('snakeCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    snakeGame = {
+        snake: [{x: 200, y: 200}],
+        dx: 20,
+        dy: 0,
+        food: {x: 0, y: 0},
+        score: 0,
+        gameOver: false
+    };
+    
+    generateFood();
+    
+    // Czyszczenie poprzedniej pętli
+    if (gameStateManager.currentGameLoop) {
+        clearInterval(gameStateManager.currentGameLoop);
+    }
+    
+    gameStateManager.currentGameLoop = setInterval(() => {
+        if (!snakeGame.gameOver) {
+            updateSnake();
+            drawSnake();
+        }
+    }, 100);
 }
 
 function generateFood() {
-  const canvas = document.getElementById('snakeCanvas');
-  const cols = Math.floor(canvas.width / SNAKE_STEP);
-  const rows = Math.floor(canvas.height / SNAKE_STEP);
-
-  let fx, fy;
-  do {
-    fx = Math.floor(Math.random() * cols) * SNAKE_STEP;
-    fy = Math.floor(Math.random() * rows) * SNAKE_STEP;
-  } while (snake && snake.some(seg => seg.x === fx && seg.y === fy));
-
-  food = { x: fx, y: fy };
+    if (!snakeGame) return;
+    
+    const canvas = document.getElementById('snakeCanvas');
+    do {
+        snakeGame.food.x = Math.floor(Math.random() * 20) * 20;
+        snakeGame.food.y = Math.floor(Math.random() * 20) * 20;
+    } while (snakeGame.snake.some(segment => 
+        segment.x === snakeGame.food.x && segment.y === snakeGame.food.y
+    ));
 }
 
 function updateSnake() {
-  const canvas = document.getElementById('snakeCanvas');
-  const ctx = canvas.getContext('2d');
-
-  if (direction.x === 0 && direction.y === 0) {
-    drawSnake(ctx);
-    return;
-  }
-
-  const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-
-  if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
-    gameOver('snake'); return;
-  }
-
-  for (let seg of snake) {
-    if (head.x === seg.x && head.y === seg.y) { gameOver('snake'); return; }
-  }
-
-  snake.unshift(head);
-
-  if (head.x === food.x && head.y === food.y) {
-    snakeScore += 10; updateSnakeScore(); AudioEngine.play('pickup'); vibrate(30); generateFood();
-  } else {
-    snake.pop();
-  }
-
-  drawSnake(ctx);
+    const head = {
+        x: snakeGame.snake[0].x + snakeGame.dx,
+        y: snakeGame.snake[0].y + snakeGame.dy
+    };
+    
+    // Wrap around
+    if (head.x < 0) head.x = 380;
+    if (head.x >= 400) head.x = 0;
+    if (head.y < 0) head.y = 380;
+    if (head.y >= 400) head.y = 0;
+    
+    // Kolizja z samym sobą
+    if (snakeGame.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        snakeGame.gameOver = true;
+        soundManager.play('lose');
+        return;
+    }
+    
+    snakeGame.snake.unshift(head);
+    
+    // Jedzenie
+    if (head.x === snakeGame.food.x && head.y === snakeGame.food.y) {
+        snakeGame.score += 10;
+        document.getElementById('snakeScore').textContent = `Energia: ${snakeGame.score}`;
+        soundManager.play('pickup');
+        generateFood();
+    } else {
+        snakeGame.snake.pop();
+    }
 }
 
-function drawSnake(ctx) {
-  const canvas = ctx.canvas;
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#ff0000'; ctx.fillRect(food.x, food.y, SNAKE_STEP, SNAKE_STEP);
-  ctx.fillStyle = '#00ff00'; for (let seg of snake) ctx.fillRect(seg.x, seg.y, SNAKE_STEP, SNAKE_STEP);
+function drawSnake() {
+    const canvas = document.getElementById('snakeCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Rysuj węża
+    ctx.fillStyle = '#00ff00';
+    snakeGame.snake.forEach((segment, index) => {
+        ctx.fillStyle = index === 0 ? '#00ff00' : '#00cc00';
+        ctx.fillRect(segment.x, segment.y, 18, 18);
+    });
+    
+    // Rysuj jedzenie
+    ctx.fillStyle = '#ff00ff';
+    ctx.fillRect(snakeGame.food.x, snakeGame.food.y, 18, 18);
+    
+    // Game Over
+    if (snakeGame.gameOver) {
+        ctx.fillStyle = '#ff0000';
+        ctx.font = '30px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', 200, 200);
+    }
 }
 
-function updateSnakeScore() {
-  document.getElementById('snakeScore').textContent = `Energia: ${snakeScore}`;
+function resetSnake() {
+    soundManager.play('click');
+    initSnake();
 }
 
-function resetSnake() { AudioEngine.play('click'); initSnake(); }
-
-// PONG GAME
-let pongBall, player, computer, pongPlayerScore, pongComputerScore;
-
+// ===== PONG GAME =====
 function initPong() {
-  const canvas = document.getElementById('pongCanvas');
-  const ctx = canvas.getContext('2d');
-
-  pongBall = { x: canvas.width / 2, y: canvas.height / 2, dx: 4, dy: 4, size: 10 };
-  player = { x: 10, y: canvas.height / 2 - 25, width: 10, height: 50, dy: 0 };
-  computer = { x: canvas.width - 20, y: canvas.height / 2 - 25, width: 10, height: 50 };
-  pongPlayerScore = 0;
-  pongComputerScore = 0;
-
-  updatePongScore();
-
-  if (gameLoops.pong) clearInterval(gameLoops.pong);
-  gameLoops.pong = setInterval(updatePong, 1000 / 60);
-
-  drawPong(ctx);
+    const canvas = document.getElementById('pongCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    pongGame = {
+        ball: {x: 300, y: 150, dx: 4, dy: 3, radius: 8},
+        player: {y: 100, score: 0},
+        ai: {y: 100, score: 0},
+        paddleHeight: 80,
+        paddleWidth: 15
+    };
+    
+    if (gameStateManager.currentGameLoop) {
+        clearInterval(gameStateManager.currentGameLoop);
+    }
+    
+    gameStateManager.currentGameLoop = setInterval(() => {
+        updatePong();
+        drawPong();
+    }, 1000 / 60);
 }
 
 function updatePong() {
-  const canvas = document.getElementById('pongCanvas');
-  const ctx = canvas.getContext('2d');
-  const r = pongBall.size;
-
-  pongBall.x += pongBall.dx;
-  pongBall.y += pongBall.dy;
-
-  if (pongBall.y - r <= 0 || pongBall.y + r >= canvas.height) {
-    pongBall.dy = -pongBall.dy; AudioEngine.play('bounce');
-  }
-
-  if (pongBall.dx < 0 &&
-      pongBall.x - r <= player.x + player.width &&
-      pongBall.y >= player.y && pongBall.y <= player.y + player.height) {
-    pongBall.x = player.x + player.width + r + 0.5;
-    const relative = (pongBall.y - (player.y + player.height / 2)) / (player.height / 2);
-    pongBall.dx = Math.abs(pongBall.dx) + 0.2;
-    pongBall.dy = 5 * relative;
-    AudioEngine.play('bounce');
-  }
-
-  if (pongBall.dx > 0 &&
-      pongBall.x + r >= computer.x &&
-      pongBall.y >= computer.y && pongBall.y <= computer.y + computer.height) {
-    pongBall.x = computer.x - r - 0.5;
-    const relative = (pongBall.y - (computer.y + computer.height / 2)) / (computer.height / 2);
-    pongBall.dx = -Math.abs(pongBall.dx) - 0.2;
-    pongBall.dy = 5 * relative;
-    AudioEngine.play('bounce');
-  }
-
-  if (pongBall.x + r < 0) {
-    pongComputerScore++; updatePongScore(); resetPongBall(canvas); AudioEngine.play('score'); vibrate(30);
-  } else if (pongBall.x - r > canvas.width) {
-    pongPlayerScore++; updatePongScore(); resetPongBall(canvas); AudioEngine.play('score'); vibrate(30);
-  }
-
-  player.y += player.dy;
-  player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
-
-  if (computer.y + computer.height / 2 < pongBall.y) computer.y += 3; else computer.y -= 3;
-  computer.y = Math.max(0, Math.min(canvas.height - computer.height, computer.y));
-
-  drawPong(ctx);
-}
-
-function drawPong(ctx) {
-  const canvas = ctx.canvas;
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-  ctx.fillRect(computer.x, computer.y, computer.width, computer.height);
-  ctx.beginPath(); ctx.arc(pongBall.x, pongBall.y, pongBall.size, 0, Math.PI * 2); ctx.fill();
-  ctx.setLineDash([5, 15]); ctx.strokeStyle = '#666';
-  ctx.beginPath(); ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height); ctx.stroke();
-}
-
-function resetPongBall(canvas = document.getElementById('pongCanvas')) {
-  const dirX = Math.random() > 0.5 ? 1 : -1;
-  const dirY = Math.random() > 0.5 ? 1 : -1;
-  pongBall.x = canvas.width / 2; pongBall.y = canvas.height / 2;
-  pongBall.dx = dirX * 4; pongBall.dy = dirY * (2 + Math.random() * 2);
-}
-
-function updatePongScore() {
-  document.getElementById('pongScore').textContent = `Człowiek: ${pongPlayerScore} | AI: ${pongComputerScore}`;
-}
-
-function resetPong() { AudioEngine.play('click'); initPong(); }
-
-// BREAKOUT GAME
-let breakoutBall, breakoutPaddle, breakoutBricks, breakoutScore, breakoutLives;
-
-function initBreakout() {
-  const canvas = document.getElementById('breakoutCanvas');
-  const ctx = canvas.getContext('2d');
-
-  breakoutBall = { x: 250, y: 350, dx: 4, dy: -4, size: 8 };
-  breakoutPaddle = { x: 200, y: 370, width: 100, height: 10, dx: 0 };
-  breakoutScore = 0;
-  breakoutLives = 3;
-
-  breakoutBricks = [];
-  const rows = 6, cols = 10, bw = 45, bh = 15, gap = 5, x0 = 5, y0 = 50;
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      breakoutBricks.push({ x: x0 + col * (bw + gap), y: y0 + row * (bh + gap), width: bw, height: bh, alive: true });
+    // Aktualizacja piłki
+    pongGame.ball.x += pongGame.ball.dx;
+    pongGame.ball.y += pongGame.ball.dy;
+    
+    // Odbicie od ścian
+    if (pongGame.ball.y - pongGame.ball.radius <= 0 || 
+        pongGame.ball.y + pongGame.ball.radius >= 300) {
+        pongGame.ball.dy = -pongGame.ball.dy;
+        soundManager.play('bounce');
     }
-  }
+    
+    // Odbicie od paletek
+    if (pongGame.ball.x - pongGame.ball.radius <= 25) {
+        if (pongGame.ball.y >= pongGame.player.y && 
+            pongGame.ball.y <= pongGame.player.y + pongGame.paddleHeight) {
+            pongGame.ball.dx = -pongGame.ball.dx;
+            const relativeY = (pongGame.ball.y - pongGame.player.y) / pongGame.paddleHeight;
+            pongGame.ball.dy = (relativeY - 0.5) * 8;
+            soundManager.play('hit');
+        }
+    }
+    
+    if (pongGame.ball.x + pongGame.ball.radius >= 575) {
+        if (pongGame.ball.y >= pongGame.ai.y && 
+            pongGame.ball.y <= pongGame.ai.y + pongGame.paddleHeight) {
+            pongGame.ball.dx = -pongGame.ball.dx;
+            soundManager.play('hit');
+        }
+    }
+    
+    // Punkty
+    if (pongGame.ball.x < 0) {
+        pongGame.ai.score++;
+        resetBall();
+        soundManager.play('score');
+    }
+    if (pongGame.ball.x > 600) {
+        pongGame.player.score++;
+        resetBall();
+        soundManager.play('score');
+    }
+    
+    // AI
+    const aiSpeed = 3;
+    if (pongGame.ball.y < pongGame.ai.y + pongGame.paddleHeight / 2) {
+        pongGame.ai.y = Math.max(0, pongGame.ai.y - aiSpeed);
+    } else {
+        pongGame.ai.y = Math.min(220, pongGame.ai.y + aiSpeed);
+    }
+    
+    document.getElementById('pongScore').textContent = 
+        `Człowiek: ${pongGame.player.score} | AI: ${pongGame.ai.score}`;
+}
 
-  updateBreakoutScore();
+function resetBall() {
+    pongGame.ball.x = 300;
+    pongGame.ball.y = 150;
+    pongGame.ball.dx = (Math.random() > 0.5 ? 4 : -4);
+    pongGame.ball.dy = (Math.random() - 0.5) * 6;
+}
 
-  if (gameLoops.breakout) clearInterval(gameLoops.breakout);
-  gameLoops.breakout = setInterval(updateBreakout, 1000 / 60);
+function drawPong() {
+    const canvas = document.getElementById('pongCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Linia środkowa
+    ctx.setLineDash([10, 10]);
+    ctx.strokeStyle = '#444';
+    ctx.beginPath();
+    ctx.moveTo(300, 0);
+    ctx.lineTo(300, 300);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Paletki
+    ctx.fillStyle = '#00ff00';
+    ctx.fillRect(10, pongGame.player.y, pongGame.paddleWidth, pongGame.paddleHeight);
+    ctx.fillRect(575, pongGame.ai.y, pongGame.paddleWidth, pongGame.paddleHeight);
+    
+    // Piłka
+    ctx.fillStyle = '#ff00ff';
+    ctx.beginPath();
+    ctx.arc(pongGame.ball.x, pongGame.ball.y, pongGame.ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+}
 
-  drawBreakout(ctx);
+function resetPong() {
+    soundManager.play('click');
+    initPong();
+}
+
+// ===== BREAKOUT GAME =====
+function initBreakout() {
+    const canvas = document.getElementById('breakoutCanvas');
+    
+    breakoutGame = {
+        ball: {x: 250, y: 350, dx: 3, dy: -3, radius: 8},
+        paddle: {x: 210, width: 80, height: 10},
+        bricks: [],
+        score: 0,
+        lives: 3,
+        gameOver: false
+    };
+    
+    // Tworzenie cegieł
+    for (let r = 0; r < 5; r++) {
+        breakoutGame.bricks[r] = [];
+        for (let c = 0; c < 8; c++) {
+            breakoutGame.bricks[r][c] = {
+                x: c * 60 + 15,
+                y: r * 30 + 40,
+                width: 50,
+                height: 20,
+                destroyed: false,
+                color: `hsl(${r * 60}, 70%, 50%)`
+            };
+        }
+    }
+    
+    if (gameStateManager.currentGameLoop) {
+        clearInterval(gameStateManager.currentGameLoop);
+    }
+    
+    gameStateManager.currentGameLoop = setInterval(() => {
+        if (!breakoutGame.gameOver) {
+            updateBreakout();
+            drawBreakout();
+        }
+    }, 1000 / 60);
 }
 
 function updateBreakout() {
-  const canvas = document.getElementById('breakoutCanvas');
-  const ctx = canvas.getContext('2d');
-  const r = breakoutBall.size;
-
-  breakoutBall.x += breakoutBall.dx;
-  breakoutBall.y += breakoutBall.dy;
-
-  if (breakoutBall.x - r <= 0 || breakoutBall.x + r >= canvas.width) { breakoutBall.dx = -breakoutBall.dx; AudioEngine.play('bounce'); }
-  if (breakoutBall.y - r <= 0) { breakoutBall.dy = -breakoutBall.dy; AudioEngine.play('bounce'); }
-
-  if (breakoutBall.y + r >= breakoutPaddle.y &&
-      breakoutBall.x >= breakoutPaddle.x &&
-      breakoutBall.x <= breakoutPaddle.x + breakoutPaddle.width &&
-      breakoutBall.dy > 0) {
-    breakoutBall.dy = -Math.abs(breakoutBall.dy);
-    const hit = (breakoutBall.x - (breakoutPaddle.x + breakoutPaddle.width / 2)) / (breakoutPaddle.width / 2);
-    breakoutBall.dx += hit * 1.5;
-    AudioEngine.play('bounce');
-  }
-
-  if (breakoutBall.y - r > canvas.height) {
-    breakoutLives--;
-    if (breakoutLives <= 0) { gameOver('breakout'); return; }
-    breakoutBall.x = 250; breakoutBall.y = 350; breakoutBall.dx = 4; breakoutBall.dy = -4;
-    AudioEngine.play('lose'); vibrate(50);
-    updateBreakoutScore();
-  }
-
-  for (let brick of breakoutBricks) {
-    if (!brick.alive) continue;
-    if (breakoutBall.x + r >= brick.x &&
-        breakoutBall.x - r <= brick.x + brick.width &&
-        breakoutBall.y + r >= brick.y &&
-        breakoutBall.y - r <= brick.y + brick.height) {
-      brick.alive = false;
-      breakoutScore += 10; updateBreakoutScore(); AudioEngine.play('hit'); vibrate(20);
-      breakoutBall.dy = -breakoutBall.dy;
-      break;
+    // Aktualizacja piłki
+    breakoutGame.ball.x += breakoutGame.ball.dx;
+    breakoutGame.ball.y += breakoutGame.ball.dy;
+    
+    // Odbicie od ścian
+    if (breakoutGame.ball.x + breakoutGame.ball.radius > 500 || 
+        breakoutGame.ball.x - breakoutGame.ball.radius < 0) {
+        breakoutGame.ball.dx = -breakoutGame.ball.dx;
+        soundManager.play('bounce');
     }
-  }
-
-  if (breakoutBricks.every(b => !b.alive)) { gameOver('breakout', true); return; }
-
-  breakoutPaddle.x += breakoutPaddle.dx;
-  breakoutPaddle.x = Math.max(0, Math.min(canvas.width - breakoutPaddle.width, breakoutPaddle.x));
-
-  drawBreakout(ctx);
-}
-
-function drawBreakout(ctx) {
-  const canvas = ctx.canvas;
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  for (let brick of breakoutBricks) {
-    if (!brick.alive) continue;
-    ctx.fillStyle = `hsl(${(brick.x + brick.y) % 360}, 70%, 50%)`;
-    ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
-  }
-
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(breakoutPaddle.x, breakoutPaddle.y, breakoutPaddle.width, breakoutPaddle.height);
-
-  ctx.beginPath(); ctx.arc(breakoutBall.x, breakoutBall.y, breakoutBall.size, 0, Math.PI * 2); ctx.fill();
-}
-
-function updateBreakoutScore() {
-  document.getElementById('breakoutScore').textContent = `Hack Points: ${breakoutScore} | System Lives: ${breakoutLives}`;
-}
-
-function resetBreakout() { AudioEngine.play('click'); initBreakout(); }
-
-// ASTEROIDS GAME
-let ship, asteroids, bullets, asteroidsScore, asteroidsLives;
-
-function initAsteroids() {
-  const canvas = document.getElementById('asteroidsCanvas');
-  const ctx = canvas.getContext('2d');
-
-  ship = { x: canvas.width / 2, y: canvas.height / 2, angle: 0, velX: 0, velY: 0, size: 10 };
-  asteroids = [];
-  bullets = [];
-  asteroidsScore = 0;
-  asteroidsLives = 3;
-
-  for (let i = 0; i < 5; i++) createAsteroid();
-
-  updateAsteroidsScore();
-
-  if (gameLoops.asteroids) clearInterval(gameLoops.asteroids);
-  gameLoops.asteroids = setInterval(updateAsteroids, 1000 / 60);
-
-  drawAsteroids(ctx);
-}
-
-function createAsteroid() {
-  const canvas = document.getElementById('asteroidsCanvas');
-  asteroids.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    velX: (Math.random() - 0.5) * 3,
-    velY: (Math.random() - 0.5) * 3,
-    size: 18 + Math.random() * 24
-  });
-}
-
-function updateAsteroids() {
-  const canvas = document.getElementById('asteroidsCanvas');
-  const ctx = canvas.getContext('2d');
-
-  ship.x += ship.velX;
-  ship.y += ship.velY;
-  ship.velX *= 0.99;
-  ship.velY *= 0.99;
-
-  if (ship.x < 0) ship.x = canvas.width;
-  if (ship.x > canvas.width) ship.x = 0;
-  if (ship.y < 0) ship.y = canvas.height;
-  if (ship.y > canvas.height) ship.y = 0;
-
-  for (let a of asteroids) {
-    a.x += a.velX; a.y += a.velY;
-    if (a.x < 0) a.x = canvas.width;
-    if (a.x > canvas.width) a.x = 0;
-    if (a.y < 0) a.y = canvas.height;
-    if (a.y > canvas.height) a.y = 0;
-
-    const dx = ship.x - a.x, dy = ship.y - a.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist < ship.size + a.size) {
-      asteroidsLives--; AudioEngine.play('lose'); vibrate(60);
-      if (asteroidsLives <= 0) { gameOver('asteroids'); return; }
-      ship.x = canvas.width / 2; ship.y = canvas.height / 2; ship.velX = 0; ship.velY = 0;
-      updateAsteroidsScore();
+    
+    if (breakoutGame.ball.y - breakoutGame.ball.radius < 0) {
+        breakoutGame.ball.dy = -breakoutGame.ball.dy;
+        soundManager.play('bounce');
     }
-  }
-
-  for (let i = bullets.length - 1; i >= 0; i--) {
-    const b = bullets[i];
-    b.x += b.velX; b.y += b.velY; b.life--;
-    if (b.life <= 0) { bullets.splice(i, 1); continue; }
-    if (b.x < 0) b.x = canvas.width; if (b.x > canvas.width) b.x = 0;
-    if (b.y < 0) b.y = canvas.height; if (b.y > canvas.height) b.y = 0;
-
-    for (let j = asteroids.length - 1; j >= 0; j--) {
-      const a = asteroids[j];
-      const dist = Math.hypot(b.x - a.x, b.y - a.y);
-      if (dist < a.size) {
-        bullets.splice(i, 1); asteroids.splice(j, 1);
-        asteroidsScore += 10; AudioEngine.play('explode'); vibrate(35);
-        updateAsteroidsScore();
-        if (asteroids.length < 3) createAsteroid();
-        break;
-      }
-    }
-  }
-
-  drawAsteroids(ctx);
-}
-
-function drawAsteroids(ctx) {
-  const canvas = ctx.canvas;
-  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.save();
-  ctx.translate(ship.x, ship.y);
-  ctx.rotate(ship.angle);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, -ship.size);
-  ctx.lineTo(-ship.size * 0.8, ship.size);
-  ctx.lineTo(ship.size * 0.8, ship.size);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.fillStyle = '#888';
-  for (let a of asteroids) {
-    ctx.beginPath();
-    ctx.arc(a.x, a.y, a.size, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  ctx.fillStyle = '#ff0';
-  for (let b of bullets) {
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-function updateAsteroidsScore() {
-  document.getElementById('asteroidsScore').textContent = `Space Points: ${asteroidsScore} | Ship Lives: ${asteroidsLives}`;
-}
-
-function resetAsteroids() { AudioEngine.play('click'); initAsteroids(); }
-
-function gameOver(game, won = false) {
-  if (gameLoops[game]) clearInterval(gameLoops[game]);
-  AudioEngine.play(won ? 'win' : 'lose');
-  setTimeout(() => {
-    alert(won ? 'WYGRAŁEŚ! MISJA ZAKOŃCZONA SUKCESEM!' : 'GAME OVER - SYSTEM FAILURE');
-  }, 10);
-}
-
-// KEYBOARD CONTROLS
-document.addEventListener('keydown', (e) => {
-  if (!currentGame) return;
-  const key = e.key.toLowerCase();
-
-  switch (currentGame) {
-    case 'snake':
-      if (!snake) return;
-      let nd = null;
-      if (key === 'arrowup' || key === 'w') nd = { x: 0, y: -SNAKE_STEP };
-      if (key === 'arrowdown' || key === 's') nd = { x: 0, y: SNAKE_STEP };
-      if (key === 'arrowleft' || key === 'a') nd = { x: -SNAKE_STEP, y: 0 };
-      if (key === 'arrowright' || key === 'd') nd = { x: SNAKE_STEP, y: 0 };
-      if (nd) {
-        if (snake.length > 1) {
-          const nextX = snake[0].x + nd.x, nextY = snake[0].y + nd.y;
-          if (nextX === snake[1].x && nextY === snake[1].y) return;
+    
+    // Strata życia
+    if (breakoutGame.ball.y > 400) {
+        breakoutGame.lives--;
+        if (breakoutGame.lives <= 0) {
+            breakoutGame.gameOver = true;
+            soundManager.play('lose');
+        } else {
+            breakoutGame.ball.x = 250;
+            breakoutGame.ball.y = 350;
+            breakoutGame.ball.dx = 3;
+            breakoutGame.ball.dy = -3;
+            soundManager.play('hit');
         }
-        direction = nd;
-      }
-      break;
+    }
+    
+    // Odbicie od paletki
+    if (breakoutGame.ball.y + breakoutGame.ball.radius >= 380 &&
+        breakoutGame.ball.x >= breakoutGame.paddle.x &&
+        breakoutGame.ball.x <= breakoutGame.paddle.x + breakoutGame.paddle.width) {
+        breakoutGame.ball.dy = -breakoutGame.ball.dy;
+        const relativeX = (breakoutGame.ball.x - breakoutGame.paddle.x) / breakoutGame.paddle.width;
+        breakoutGame.ball.dx = (relativeX - 0.5) * 8;
+        soundManager.play('hit');
+    }
+    
+    // Kolizje z cegłami
+    for (let r = 0; r < breakoutGame.bricks.length; r++) {
+        for (let c = 0; c < breakoutGame.bricks[r].length; c++) {
+            const brick = breakoutGame.bricks[r][c];
+            if (!brick.destroyed) {
+                if (breakoutGame.ball.x > brick.x &&
+                    breakoutGame.ball.x < brick.x + brick.width &&
+                    breakoutGame.ball.y > brick.y &&
+                    breakoutGame.ball.y < brick.y + brick.height) {
+                    breakoutGame.ball.dy = -breakoutGame.ball.dy;
+                    brick.destroyed = true;
+                    breakoutGame.score += 10;
+                    soundManager.play('explode');
+                }
+            }
+        }
+    }
+    
+    // Sprawdzenie wygranej
+    const allDestroyed = breakoutGame.bricks.every(row => 
+        row.every(brick => brick.destroyed)
+    );
+    
+    if (allDestroyed) {
+        breakoutGame.gameOver = true;
+        soundManager.play('win');
+    }
+    
+    document.getElementById('breakoutScore').textContent = 
+        `Hack Points: ${breakoutGame.score} | System Lives: ${breakoutGame.lives}`;
+}
 
-    case 'pong':
-      if (key === 'arrowup' || key === 'w') player.dy = -6;
-      if (key === 'arrowdown' || key === 's') player.dy = 6;
-      break;
+function drawBreakout() {
+    const canvas = document.getElementById('breakoutCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Rysuj cegły
+    for (let r = 0; r < breakoutGame.bricks.length; r++) {
+        for (let c = 0; c < breakoutGame.bricks[r].length; c++) {
+            const brick = breakoutGame.bricks[r][c];
+            if (!brick.destroyed) {
+                ctx.fillStyle = brick.color;
+                ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+            }
+        }
+    }
+    
+    // Paletka
+    ctx.fillStyle = '#00ff00';
+    ctx.fillRect(breakoutGame.paddle.x, 380, breakoutGame.paddle.width, breakoutGame.paddle.height);
+    
+    // Piłka
+    ctx.fillStyle = '#ff00ff';
+    ctx.beginPath();
+    ctx.arc(breakoutGame.ball.x, breakoutGame.ball.y, breakoutGame.ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Game Over
+    if (breakoutGame.gameOver) {
+        ctx.fillStyle = breakoutGame.lives > 0 ? '#00ff00' : '#ff0000';
+        ctx.font = '30px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText(breakoutGame.lives > 0 ? 'YOU WIN!' : 'GAME OVER', 250, 200);
+    }
+}
 
-    case 'breakout':
-      if (key === 'arrowleft' || key === 'a') breakoutPaddle.dx = -7;
-      if (key === 'arrowright' || key === 'd') breakoutPaddle.dx = 7;
-      break;
+function resetBreakout() {
+    soundManager.play('click');
+    initBreakout();
+}
 
-    case 'asteroids':
-      if (key === 'arrowup') {
-        ship.velX += Math.cos(ship.angle - Math.PI / 2) * 0.5;
-        ship.velY += Math.sin(ship.angle - Math.PI / 2) * 0.5;
-      }
-      if (key === 'arrowleft') ship.angle -= 0.1;
-      if (key === 'arrowright') ship.angle += 0.1;
-      if (e.code === 'Space') {
-        e.preventDefault();
-        bullets.push({
-          x: ship.x, y: ship.y,
-          velX: Math.cos(ship.angle - Math.PI / 2) * 8,
-          velY: Math.sin(ship.angle - Math.PI / 2) * 8,
-          life: 60
-        });
-        AudioEngine.play('shoot');
-      }
-      break;
-  }
+// ===== Event Listeners z Clean Code =====
+document.addEventListener('keydown', (e) => {
+    const key = inputHandler.handleKeyDown(e);
+    
+    // Snake controls
+    if (gameStateManager.currentGame === 'snake' && snakeGame && !snakeGame.gameOver) {
+        const prevDx = snakeGame.dx;
+        const prevDy = snakeGame.dy;
+        
+        switch(key) {
+            case 'up':
+                if (prevDy === 0) {
+                    snakeGame.dx = 0;
+                    snakeGame.dy = -20;
+                }
+                break;
+            case 'down':
+                if (prevDy === 0) {
+                    snakeGame.dx = 0;
+                    snakeGame.dy = 20;
+                }
+                break;
+            case 'left':
+                if (prevDx === 0) {
+                    snakeGame.dx = -20;
+                    snakeGame.dy = 0;
+                }
+                break;
+            case 'right':
+                if (prevDx === 0) {
+                    snakeGame.dx = 20;
+                    snakeGame.dy = 0;
+                }
+                break;
+        }
+    }
+    
+    // Pong controls
+    if (gameStateManager.currentGame === 'pong' && pongGame) {
+        if (key === 'up') {
+            pongGame.player.y = Math.max(0, pongGame.player.y - 20);
+        } else if (key === 'down') {
+            pongGame.player.y = Math.min(220, pongGame.player.y + 20);
+        }
+    }
+    
+    // Breakout controls
+    if (gameStateManager.currentGame === 'breakout' && breakoutGame && !breakoutGame.gameOver) {
+        if (key === 'left') {
+            breakoutGame.paddle.x = Math.max(0, breakoutGame.paddle.x - 30);
+        } else if (key === 'right') {
+            breakoutGame.paddle.x = Math.min(420, breakoutGame.paddle.x + 30);
+        }
+    }
 });
 
 document.addEventListener('keyup', (e) => {
-  if (!currentGame) return;
-  const key = e.key.toLowerCase();
-  switch (currentGame) {
-    case 'pong':
-      if (['arrowup', 'arrowdown', 'w', 's'].includes(key)) player.dy = 0;
-      break;
-    case 'breakout':
-      if (['arrowleft', 'arrowright', 'a', 'd'].includes(key)) breakoutPaddle.dx = 0;
-      break;
-  }
+    inputHandler.handleKeyUp(e);
 });
 
-// SOUND TOGGLE
-const soundToggle = document.getElementById('soundToggle');
-if (soundToggle) {
-  soundToggle.addEventListener('click', () => {
-    const to = !AudioEngine.isMuted();
-    AudioEngine.setMuted(to);
-    soundToggle.textContent = to ? '🔇 Dźwięk: OFF' : '🔊 Dźwięk: ON';
-    if (!to) AudioEngine.play('click');
-  });
-}
-
-// EXPOSE GLOBAL FUNCTIONS
-window.backToMenu = backToMenu;
-window.resetSnake = resetSnake;
-window.resetPong = resetPong;
-window.resetBreakout = resetBreakout;
-window.resetAsteroids = resetAsteroids;
-
-// INIT
-window.addEventListener('load', () => { 
-  createParticles(); 
+// Inicjalizacja przy załadowaniu
+document.addEventListener('DOMContentLoaded', () => {
+    initParticles();
+    soundManager.init();
+    
+    // Event listener dla przycisku dźwięku
+    document.getElementById('soundToggle').addEventListener('click', () => {
+        soundManager.toggleMute();
+        soundManager.play('click');
+    });
 });
