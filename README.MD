@@ -86,6 +86,17 @@
   - Wszystkie gry korzystają teraz z centralnego soundManager
   - Ujednolicona obsługa klawiszy przez inputHandler
   - Spójne zarządzanie stanami przez gameStateManager
+
+**v0.20**
+- Composition over Inheritance:
+  - Klasa GameComponent jako bazowy komponent
+  - gameObjectFactory do tworzenia różnych typów obiektów (piłka, paletka, cegła, segment węża)
+  - Kompozycja zachowań zamiast dziedziczenia
+- Open/Closed Principle:
+  - gamePluginSystem - system pluginów rozszerzający funkcjonalność
+  - System hooków pozwalający na modyfikację zachowania bez zmiany kodu
+  - Przykładowe pluginy: scoreMultiplierPlugin (combo system) i particleEffectsPlugin (efekty cząsteczkowe)
+  
 ## Opis aplikacji
 
 **Gaming Universe** to interaktywna aplikacja webowa zawierająca kolekcję czterech klasycznych gier arkadowych w nowoczesnej, cyberpunkowej oprawie wizualnej. Aplikacja została stworzona jako rozrywkowa platforma do gier retro z futurystycznym designem.
