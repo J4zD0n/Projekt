@@ -88,15 +88,89 @@
   - Spójne zarządzanie stanami przez gameStateManager
 
 **v0.20**
-- Composition over Inheritance:
-  - Klasa GameComponent jako bazowy komponent
-  - gameObjectFactory do tworzenia różnych typów obiektów (piłka, paletka, cegła, segment węża)
-  - Kompozycja zachowań zamiast dziedziczenia
-- Open/Closed Principle:
-  - gamePluginSystem - system pluginów rozszerzający funkcjonalność
-  - System hooków pozwalający na modyfikację zachowania bez zmiany kodu
-  - Przykładowe pluginy: scoreMultiplierPlugin (combo system) i particleEffectsPlugin (efekty cząsteczkowe)
-  
+- Clean Code Implementation
+  - Composition over Inheritance:
+    - Klasa GameComponent jako bazowy komponent
+    - gameObjectFactory do tworzenia różnych typów obiektów (piłka, paletka, cegła, segment węża)
+    - Kompozycja zachowań zamiast dziedziczenia
+  - Open/Closed Principle:
+    - gamePluginSystem - system pluginów rozszerzający funkcjonalność
+    - System hooków pozwalający na modyfikację zachowania bez zmiany kodu
+    - Przykładowe pluginy: scoreMultiplierPlugin (combo system) i particleEffectsPlugin (efekty cząsteczkowe)
+
+  **v0.30** 
+- **Nowa Gra: Quantum Wordle**
+  - Klasyczna gra w odgadywanie słów w cyberpunkowym stylu
+  - 5-literowe słowa z polskiej listy słów technologicznych
+  - System kolorowych podpowiedzi (zielony - poprawna litera w dobrym miejscu, żółty - poprawna litera w złym miejscu, szary - brak litery)
+  - Wirtualna klawiatura z wizualną informacją o użytych literach
+  - 6 prób na odgadnięcie słowa
+  - System zapamiętywania użytych słów (localStorage)
+
+- **System Poziomów Trudności**
+  - **Snake**: 4 poziomy trudności (Łatwy, Średni, Trudny, Ekspert)
+    - Różne prędkości węża i mnożniki punktów
+  - **Pong**: 4 poziomy trudności (Łatwy, Średni, Trudny, Ekspert)
+    - Różne prędkości piłki, AI i gracza
+  - Modal wyboru trudności przed rozpoczęciem gry
+
+- **System Statystyk i Postępu**
+  - **statsManager** - kompleksowy system śledzenia postępów
+  - Zapisywanie najlepszych wyników w localStorage
+  - Statystyki dla każdej gry:
+    - Snake: najlepszy wynik, liczba rozegranych gier
+    - Pong: najlepszy wynik, liczba rozegranych gier  
+    - Breakout: najwyższy poziom, najlepszy wynik, liczba rozegranych gier
+    - Wordle: liczba rozwiązanych gier, aktualna seria wygranych
+  - Modal statystyk dostępny z paska narzędzi
+
+- **System Poziomów w Breakout**
+  - 10 predefiniowanych poziomów z unikalnymi układami cegieł
+  - Różne typy cegieł (1-3 trafienia do zniszczenia)
+  - Progresywnie zwiększająca się trudność
+  - System ukończenia poziomów z animacjami
+  - Automatyczne przejście do następnego poziomu
+
+- **Ulepszenia Kontroli**
+  - **Płynny ruch paletek** w Pong i Breakout (przytrzymanie klawiszy)
+  - Ulepszona obsługa klawiatury dla Wordle
+  - Lepsza responsywność kontroli
+
+- **System Powiadomień**
+  - Wyświetlanie powiadomień o rekordach, ukończonych poziomach
+  - Animowane powiadomienia w prawym górnym rogu
+  - Automatyczne chowanie po 3 sekundach
+
+- **System Motywów**
+  - **themeManager** - przełączanie między motywem ciemnym i jasnym
+  - Zapisywanie preferencji w localStorage
+  - Pełna stylizacja jasnego motywu
+
+- **Ulepszenia Wizualne**
+  - Animacja pulsowania tytułu
+  - Badge poziomu trudności w grze
+  - Badge aktualnego poziomu w Breakout
+  - Ulepszone karty gier z wyświetlaczem statystyk
+  - Animacje ukończenia poziomów w Breakout
+
+- **Usunięte Elementy**
+  - **Całkowite usunięcie systemu dźwięków** (soundManager) - tymczasowo wyłączone
+  - **Usunięcie systemu pluginów** - zastąpione bezpośrednią implementacją funkcjonalności
+  - **Usunięcie fabryki obiektów** - uproszczenie kodu gier
+
+- **Optymalizacje**
+  - Uproszczona architektura gier
+  - Lepsze zarządzanie pamięcią
+  - Zmniejszenie złożoności kodu
+  - Szybsze ładowanie gier
+
+- **Stabilność**
+  - Lepsza obsługa błędów
+  - Zabezpieczenie przed duplikacją event listenerów
+  - Poprawione czyszczenie interwałów
+  - Lepsze zarządzanie stanem gier
+
+
 ## Opis aplikacji
 
 **Gaming Universe** to interaktywna aplikacja webowa zawierająca kolekcję czterech klasycznych gier arkadowych w nowoczesnej, cyberpunkowej oprawie wizualnej. Aplikacja została stworzona jako rozrywkowa platforma do gier retro z futurystycznym designem.

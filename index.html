@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Gaming Universe</title>
+  <title>Gaming Universe - Professional Gaming Platform</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,9 +12,25 @@
   <div class="container">
     <div class="header">
       <h1>🌟 GAMING HUB 🌟</h1>
-      <p>Klasyczne gry</p>
+      <p>Profesjonalna Platforma Gier</p>
       <div class="toolbar">
-        <button id="soundToggle" class="control-btn small">🔊 Dźwięk: ON</button>
+        <button id="statsBtn" class="control-btn small">📊 Statystyki</button>
+        <button id="themeBtn" class="control-btn small">🎨 Motyw</button>
+      </div>
+    </div>
+
+    <div id="statsModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>📊 Twoje Statystyki</h2>
+        <div id="statsContent"></div>
+      </div>
+    </div>
+
+    <div id="difficultyModal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="difficultyTitle">Wybierz poziom trudności</h2>
+        <div id="difficultyOptions" class="difficulty-grid"></div>
       </div>
     </div>
 
@@ -22,17 +38,34 @@
       <div class="game-card">
         <h3>🐍 Quantum Snake</h3>
         <p>Klasyczny wąż w kosmicznej odsłonie! Zbieraj energia-kule i unikaj kolizji.</p>
-        <button class="play-btn" onclick="uiStart('snake')">Rozpocznij Misję</button>
+        <div class="game-stats">
+          <span>Najlepszy wynik: <span id="snakeBest">0</span></span>
+        </div>
+        <button class="play-btn" onclick="selectDifficulty('snake')">Rozpocznij Misję</button>
       </div>
       <div class="game-card">
         <h3>🏓 Cyber Pong</h3>
         <p>Retro tenis w holograficznej rzeczywistości! Odbijaj świetlną kulę energii.</p>
-        <button class="play-btn" onclick="uiStart('pong')">Aktywuj</button>
+        <div class="game-stats">
+          <span>Najlepszy wynik: <span id="pongBest">0</span></span>
+        </div>
+        <button class="play-btn" onclick="selectDifficulty('pong')">Aktywuj</button>
       </div>
       <div class="game-card">
         <h3>🧱 Neo Breakout</h3>
-        <p>Rozbijaj cyfrowe bloki w wirtualnej matrycy! Użyj swojej cyber-paletki.</p>
+        <p>Rozbijaj cyfrowe bloki w wirtualnej matrycy! Przejdź przez wszystkie poziomy!</p>
+        <div class="game-stats">
+          <span>Najwyższy poziom: <span id="breakoutBest">0</span></span>
+        </div>
         <button class="play-btn" onclick="uiStart('breakout')">Włam się</button>
+      </div>
+      <div class="game-card">
+        <h3>🔤 Quantum Wordle</h3>
+        <p>Odgadnij sekretne słowo kwantowe! 6 prób na złamanie kodu.</p>
+        <div class="game-stats">
+          <span>Rozwiązane: <span id="wordleSolved">0</span></span>
+        </div>
+        <button class="play-btn" onclick="uiStart('wordle')">Dekoduj</button>
       </div>
     </div>
 
@@ -40,6 +73,7 @@
       <h2>🐍 QUANTUM SNAKE</h2>
       <div class="instructions">
         <strong>Sterowanie Cyborg:</strong> Strzałki lub WASD
+        <span class="difficulty-badge" id="snakeDifficulty"></span>
       </div>
       <div class="score" id="snakeScore">Energia: 0</div>
       <canvas id="snakeCanvas" width="400" height="400"></canvas>
@@ -52,7 +86,8 @@
     <div id="pongGame" class="game-area">
       <h2>🏓 CYBER PONG</h2>
       <div class="instructions">
-        <strong>Kontrola Holo:</strong> Strzałki góra/dół lub W/S
+        <strong>Kontrola Holo:</strong> Strzałki góra/dół lub W/S (przytrzymaj dla płynnego ruchu)
+        <span class="difficulty-badge" id="pongDifficulty"></span>
       </div>
       <div class="score" id="pongScore">Człowiek: 0 | AI: 0</div>
       <canvas id="pongCanvas" width="600" height="300"></canvas>
@@ -65,7 +100,8 @@
     <div id="breakoutGame" class="game-area">
       <h2>🧱 NEO BREAKOUT</h2>
       <div class="instructions">
-        <strong>Cyber Interface:</strong> Strzałki lewo/prawo lub A/D
+        <strong>Cyber Interface:</strong> Strzałki lewo/prawo lub A/D (przytrzymaj dla płynnego ruchu)
+        <span class="level-badge">Poziom: <span id="breakoutLevel">1</span></span>
       </div>
       <div class="score" id="breakoutScore">Hack Points: 0 | System Lives: 3</div>
       <canvas id="breakoutCanvas" width="500" height="400"></canvas>
@@ -74,9 +110,27 @@
         <button class="back-btn" onclick="backToMenu()">Wyjście</button>
       </div>
     </div>
+
+    <div id="wordleGame" class="game-area">
+      <h2>🔤 QUANTUM WORDLE</h2>
+      <div class="instructions">
+        <strong>Dekoder:</strong> Wpisz 5-literowe słowo i naciśnij ENTER
+      </div>
+      <div class="wordle-container">
+        <div id="wordleBoard" class="wordle-board"></div>
+        <div id="wordleKeyboard" class="wordle-keyboard"></div>
+        <div id="wordleMessage" class="wordle-message"></div>
+      </div>
+      <div class="game-controls">
+        <button class="control-btn" onclick="resetWordle()">Nowe Słowo</button>
+        <button class="back-btn" onclick="backToMenu()">Wyjście</button>
+      </div>
+    </div>
   </div>
 
   <div id="countdown" class="countdown hidden"></div>
+
+  <div class="notification" id="notification"></div>
 
   <script src="javascript.js"></script>
 </body>
