@@ -34,6 +34,32 @@
       </div>
     </div>
 
+    <div id="wordleModal" class="modal hidden">
+      <div class="modal-content">
+        <h2>🔤 Wybierz tryb gry Wordle</h2>
+        <div class="wordle-modes">
+          <div class="mode-card" onclick="startWordleMode(3)">
+            <h3>📝 Krótkie słowa</h3>
+            <p>3-literowe słowa</p>
+            <p class="mode-example">np. KOT, DOM, JAŚ</p>
+            <span class="mode-difficulty easy">Łatwy</span>
+          </div>
+          <div class="mode-card" onclick="startWordleMode(4)">
+            <h3>📖 Średnie słowa</h3>
+            <p>4-literowe słowa</p>
+            <p class="mode-example">np. KAWA, MOST, CZAS</p>
+            <span class="mode-difficulty medium">Średni</span>
+          </div>
+          <div class="mode-card" onclick="startWordleMode(5)">
+            <h3>📚 Długie słowa</h3>
+            <p>5-literowe słowa</p>
+            <p class="mode-example">np. KWIAT, MOTOR, PRACA</p>
+            <span class="mode-difficulty hard">Trudny</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="gameMenu" class="games-grid">
       <div class="game-card">
         <h3>🐍 Quantum Snake</h3>
@@ -61,11 +87,11 @@
       </div>
       <div class="game-card">
         <h3>🔤 Quantum Wordle</h3>
-        <p>Odgadnij sekretne słowo kwantowe! 6 prób na złamanie kodu.</p>
+        <p>Odgadnij sekretne słowo! Wybierz długość słowa od 3 do 5 liter.</p>
         <div class="game-stats">
           <span>Rozwiązane: <span id="wordleSolved">0</span></span>
         </div>
-        <button class="play-btn" onclick="uiStart('wordle')">Dekoduj</button>
+        <button class="play-btn" onclick="selectWordleMode()">Dekoduj</button>
       </div>
     </div>
 
@@ -114,7 +140,9 @@
     <div id="wordleGame" class="game-area">
       <h2>🔤 QUANTUM WORDLE</h2>
       <div class="instructions">
-        <strong>Dekoder:</strong> Wpisz 5-literowe słowo i naciśnij ENTER
+        <strong>Dekoder:</strong> Wpisz <span id="wordleLetterCount">5</span>-literowe słowo i naciśnij ENTER
+        <span class="wordle-mode-badge" id="wordleModeBadge"></span>
+        <span id="wordleWarning" style="color: #ff4444; display: block; margin-top: 10px;"></span>
       </div>
       <div class="wordle-container">
         <div id="wordleBoard" class="wordle-board"></div>
@@ -123,6 +151,7 @@
       </div>
       <div class="game-controls">
         <button class="control-btn" onclick="resetWordle()">Nowe Słowo</button>
+        <button class="control-btn" onclick="selectWordleMode()">Zmień Tryb</button>
         <button class="back-btn" onclick="backToMenu()">Wyjście</button>
       </div>
     </div>

@@ -14,6 +14,48 @@ const difficultyConfig = {
     }
 };
 
+// ===== WORDLE WORDS BY LENGTH =====
+const wordleWords = {
+    3: [
+        // Polskie słowa
+        'KOT', 'PES', 'DOM', 'LAS', 'NOC', 'ROK', 'SEN', 'ZĄB', 'OKO', 'NOS',
+        'RAK', 'SER', 'LÓD', 'MUR', 'KOŃ', 'BÓG', 'LEW', 'MIŚ', 'RÓG', 'TYŁ',
+        'BAL', 'GAZ', 'KOD', 'LOT', 'MAJ', 'PAN', 'RAJ', 'SAD', 'TAK', 'WAL',
+        'CUD', 'DYM', 'FOK', 'GRA', 'HUK', 'JAR', 'KIJ', 'LUZ', 'MAK', 'NIE',
+        // Angielskie słowa
+        'CAT', 'DOG', 'SUN', 'RUN', 'FUN', 'BAG', 'CAR', 'BUS', 'CUP', 'HAT',
+        'BED', 'BOX', 'DAY', 'EAR', 'EGG', 'FLY', 'GOD', 'GUN', 'ICE', 'JOB',
+        'KEY', 'LAW', 'MAN', 'MAP', 'NET', 'OWL', 'PEN', 'PIG', 'RED', 'SEA',
+        'SKY', 'TOP', 'TOY', 'VAN', 'WAR', 'WEB', 'WIN', 'YES', 'ZOO', 'ZIP'
+    ],
+    4: [
+        // Polskie słowa
+        'KAWA', 'MOST', 'CZAS', 'PRĄD', 'ŚWIT', 'KRÓL', 'MAMA', 'TATA', 'BRAT', 'PIES',
+        'KOZA', 'RYBA', 'PTAK', 'DACH', 'OKNO', 'STÓŁ', 'KARA', 'MAPA', 'NOGA', 'RĘKA',
+        'GŁOWA', 'ŻYCIE', 'WODA', 'WIATR', 'BURZA', 'ŚNIEG', 'MRÓZ', 'NIEBO', 'POLE', 'GÓRA',
+        // Angielskie słowa  
+        'LOVE', 'HATE', 'GAME', 'PLAY', 'WORK', 'HOME', 'TREE', 'BOOK', 'GIRL', 'LIFE',
+        'FIRE', 'WIND', 'RAIN', 'SNOW', 'STAR', 'MOON', 'FISH', 'BIRD', 'BEAR', 'WOLF',
+        'TIME', 'YEAR', 'WEEK', 'HOUR', 'DARK', 'GOOD', 'EVIL', 'FAST', 'SLOW', 'HIGH',
+        'JUMP', 'SWIM', 'WALK', 'TALK', 'SING', 'DRAW', 'COOK', 'BAKE', 'SHOP', 'BANK'
+    ],
+    5: [
+        // Polskie słowa
+        'KWANT', 'LASER', 'PLAZM', 'ROBOT', 'KODER', 'BAJTY', 'CACHE', 'CLOUD', 'DEBUG', 'FLASH',
+        'MODEM', 'MACRO', 'LOGIC', 'VIRUS', 'STACK', 'SHELL', 'PATCH', 'PROXY', 'QUERY', 'REGEX',
+        'SCOPE', 'SETUP', 'SPACE', 'SPAWN', 'SPEED', 'SPLIT', 'STYLE', 'SUPER', 'SWING', 'TABLE',
+        'TOKEN', 'TOUCH', 'TRACK', 'TREND', 'TURBO', 'ULTRA', 'UNITY', 'VALUE', 'WATCH', 'WORLD',
+        'ZEBRA', 'AUDIO', 'BLEND', 'BOOST', 'BRAIN', 'CHAIN', 'CHAOS', 'CHARM', 'CHESS', 'CLOCK',
+        'CORAL', 'CRAFT', 'KARTA', 'MOTOR', 'PUNKT', 'SPORT', 'KWIAT', 'PRACA', 'SŁOWO', 'GRUPA',
+        // Angielskie słowa
+        'ABOUT', 'ABOVE', 'AFTER', 'AGAIN', 'ALIEN', 'ALLOW', 'ALONE', 'ALONG', 'ALPHA', 'AMBER',
+        'ANGEL', 'ANGER', 'ANGLE', 'ANGRY', 'APPLE', 'APPLY', 'ARENA', 'ARGUE', 'ARISE', 'ARMOR',
+        'ARROW', 'ASIDE', 'ASSET', 'AVOID', 'AWAKE', 'AWARD', 'AWARE', 'BADGE', 'BASIC', 'BEACH',
+        'BEAST', 'BEGIN', 'BEING', 'BELOW', 'BENCH', 'BERRY', 'BIRTH', 'BLACK', 'BLADE', 'BLAME',
+        'BLANK', 'BLAST', 'BLAZE', 'BLEED', 'BLEND', 'BLESS', 'BLIND', 'BLOCK', 'BLOOD', 'BLOOM'
+    ]
+};
+
 // ===== BREAKOUT LEVEL MAPS =====
 const breakoutLevels = [
     {
@@ -335,6 +377,20 @@ const inputHandler = {
     }
 };
 
+// ===== WORDLE MODE SELECTION =====
+function selectWordleMode() {
+    const modal = document.getElementById('wordleModal');
+    modal.classList.remove('hidden');
+}
+
+function startWordleMode(length) {
+    const modal = document.getElementById('wordleModal');
+    modal.classList.add('hidden');
+    
+    wordleGame.currentWordLength = length;
+    uiStart('wordle');
+}
+
 // ===== DIFFICULTY SELECTION =====
 function selectDifficulty(game) {
     const modal = document.getElementById('difficultyModal');
@@ -431,7 +487,7 @@ function backToMenu() {
     inputHandler.clearAll();
 }
 
-// ===== SNAKE GAME WITH DIFFICULTY =====
+// ===== IMPROVED SNAKE GAME WITH REAL SNAKE GRAPHICS =====
 let snakeGame;
 
 function initSnake() {
@@ -450,7 +506,8 @@ function initSnake() {
         score: 0,
         gameOver: false,
         speed: difficulty.speed,
-        multiplier: difficulty.multiplier
+        multiplier: difficulty.multiplier,
+        direction: 'right'
     };
     
     generateFood();
@@ -510,23 +567,91 @@ function drawSnake() {
     const canvas = document.getElementById('snakeCanvas');
     const ctx = canvas.getContext('2d');
     
+    // Tło
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = '#00ff00';
+    // Rysuj węża z gradientem i płynnymi łączeniami
     snakeGame.snake.forEach((segment, index) => {
-        ctx.fillStyle = index === 0 ? '#00ff00' : '#00cc00';
-        ctx.fillRect(segment.x, segment.y, 18, 18);
+        if (index === 0) {
+            // Głowa węża
+            ctx.fillStyle = '#00ff00';
+            ctx.beginPath();
+            ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Oczy
+            ctx.fillStyle = '#fff';
+            let eyeX1, eyeY1, eyeX2, eyeY2;
+            if (snakeGame.direction === 'right') {
+                eyeX1 = segment.x + 13; eyeY1 = segment.y + 7;
+                eyeX2 = segment.x + 13; eyeY2 = segment.y + 13;
+            } else if (snakeGame.direction === 'left') {
+                eyeX1 = segment.x + 7; eyeY1 = segment.y + 7;
+                eyeX2 = segment.x + 7; eyeY2 = segment.y + 13;
+            } else if (snakeGame.direction === 'up') {
+                eyeX1 = segment.x + 7; eyeY1 = segment.y + 7;
+                eyeX2 = segment.x + 13; eyeY2 = segment.y + 7;
+            } else {
+                eyeX1 = segment.x + 7; eyeY1 = segment.y + 13;
+                eyeX2 = segment.x + 13; eyeY2 = segment.y + 13;
+            }
+            ctx.beginPath();
+            ctx.arc(eyeX1, eyeY1, 2, 0, Math.PI * 2);
+            ctx.arc(eyeX2, eyeY2, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Źrenice
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(eyeX1, eyeY1, 1, 0, Math.PI * 2);
+            ctx.arc(eyeX2, eyeY2, 1, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            // Ciało węża - gradient koloru
+            const gradient = ctx.createRadialGradient(
+                segment.x + 10, segment.y + 10, 0,
+                segment.x + 10, segment.y + 10, 10
+            );
+            const greenValue = Math.max(100, 200 - index * 10);
+            gradient.addColorStop(0, `rgb(0, ${greenValue}, 0)`);
+            gradient.addColorStop(1, `rgb(0, ${Math.max(50, greenValue - 50)}, 0)`);
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(segment.x + 10, segment.y + 10, 9, 0, Math.PI * 2);
+            ctx.fill();
+        }
     });
     
-    ctx.fillStyle = '#ff00ff';
-    ctx.fillRect(snakeGame.food.x, snakeGame.food.y, 18, 18);
+    // Rysuj jabłko
+    ctx.fillStyle = '#ff0000';
+    ctx.beginPath();
+    ctx.arc(snakeGame.food.x + 10, snakeGame.food.y + 10, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Blask jabłka
+    ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+    ctx.beginPath();
+    ctx.arc(snakeGame.food.x + 8, snakeGame.food.y + 7, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Liść jabłka
+    ctx.fillStyle = '#00aa00';
+    ctx.fillRect(snakeGame.food.x + 8, snakeGame.food.y + 2, 4, 3);
     
     if (snakeGame.gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
         ctx.fillStyle = '#ff0000';
-        ctx.font = '30px Courier New';
+        ctx.font = 'bold 30px Courier New';
         ctx.textAlign = 'center';
-        ctx.fillText('GAME OVER', 200, 200);
+        ctx.fillText('GAME OVER', 200, 180);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '20px Courier New';
+        ctx.fillText(`Wynik: ${snakeGame.score}`, 200, 220);
     }
 }
 
@@ -534,7 +659,7 @@ function resetSnake() {
     initSnake();
 }
 
-// ===== PONG GAME WITH DIFFICULTY =====
+// ===== IMPROVED PONG GAME WITH FIXED AI =====
 let pongGame;
 
 function initPong() {
@@ -554,14 +679,15 @@ function initPong() {
             radius: 8
         },
         player: {
-            y: 100, 
+            y: 110, 
             score: 0, 
             speed: difficulty.playerSpeed
         },
         ai: {
-            y: 100, 
+            y: 110, 
             score: 0,
-            speed: difficulty.aiSpeed
+            speed: difficulty.aiSpeed,
+            targetY: 110
         },
         paddleHeight: 80,
         paddleWidth: 15,
@@ -584,7 +710,7 @@ function updatePong() {
         pongGame.player.y = Math.max(0, pongGame.player.y - pongGame.player.speed);
     }
     if (inputHandler.isPressed('down')) {
-        pongGame.player.y = Math.min(220, pongGame.player.y + pongGame.player.speed);
+        pongGame.player.y = Math.min(300 - pongGame.paddleHeight, pongGame.player.y + pongGame.player.speed);
     }
     
     // Aktualizacja piłki
@@ -592,45 +718,85 @@ function updatePong() {
     pongGame.ball.y += pongGame.ball.dy;
     
     // Odbicie od ścian
-    if (pongGame.ball.y - pongGame.ball.radius <= 0 || 
-        pongGame.ball.y + pongGame.ball.radius >= 300) {
-        pongGame.ball.dy = -pongGame.ball.dy;
+    if (pongGame.ball.y - pongGame.ball.radius <= 0) {
+        pongGame.ball.y = pongGame.ball.radius;
+        pongGame.ball.dy = Math.abs(pongGame.ball.dy);
+    }
+    if (pongGame.ball.y + pongGame.ball.radius >= 300) {
+        pongGame.ball.y = 300 - pongGame.ball.radius;
+        pongGame.ball.dy = -Math.abs(pongGame.ball.dy);
     }
     
-    // Odbicie od paletek
-    if (pongGame.ball.x - pongGame.ball.radius <= 25) {
+    // Odbicie od paletki gracza
+    if (pongGame.ball.dx < 0 && 
+        pongGame.ball.x - pongGame.ball.radius <= 10 + pongGame.paddleWidth &&
+        pongGame.ball.x - pongGame.ball.radius > 10) {
         if (pongGame.ball.y >= pongGame.player.y && 
             pongGame.ball.y <= pongGame.player.y + pongGame.paddleHeight) {
-            pongGame.ball.dx = -pongGame.ball.dx;
+            pongGame.ball.x = 10 + pongGame.paddleWidth + pongGame.ball.radius;
+            pongGame.ball.dx = Math.abs(pongGame.ball.dx);
             const relativeY = (pongGame.ball.y - pongGame.player.y) / pongGame.paddleHeight;
             pongGame.ball.dy = (relativeY - 0.5) * 8;
         }
     }
     
-    if (pongGame.ball.x + pongGame.ball.radius >= 575) {
+    // Odbicie od paletki AI
+    if (pongGame.ball.dx > 0 && 
+        pongGame.ball.x + pongGame.ball.radius >= 600 - 10 - pongGame.paddleWidth &&
+        pongGame.ball.x + pongGame.ball.radius < 600 - 10) {
         if (pongGame.ball.y >= pongGame.ai.y && 
             pongGame.ball.y <= pongGame.ai.y + pongGame.paddleHeight) {
-            pongGame.ball.dx = -pongGame.ball.dx;
+            pongGame.ball.x = 600 - 10 - pongGame.paddleWidth - pongGame.ball.radius;
+            pongGame.ball.dx = -Math.abs(pongGame.ball.dx);
+            const relativeY = (pongGame.ball.y - pongGame.ai.y) / pongGame.paddleHeight;
+            pongGame.ball.dy = (relativeY - 0.5) * 6;
         }
     }
     
     // Punkty
-    if (pongGame.ball.x < 0) {
+    if (pongGame.ball.x < -20) {
         pongGame.ai.score++;
         resetBall();
     }
-    if (pongGame.ball.x > 600) {
+    if (pongGame.ball.x > 620) {
         pongGame.player.score++;
         resetBall();
         statsManager.updateScore('pong', pongGame.player.score);
     }
     
-    // AI - z poziomem trudności
-    if (pongGame.ball.y < pongGame.ai.y + pongGame.paddleHeight / 2) {
-        pongGame.ai.y = Math.max(0, pongGame.ai.y - pongGame.ai.speed);
+    // ULEPSZONE AI
+    if (pongGame.ball.dx > 0) {
+        // Piłka leci w stronę AI - przewiduj pozycję
+        const timeToReachAI = (575 - pongGame.ball.x) / pongGame.ball.dx;
+        let predictedY = pongGame.ball.y + pongGame.ball.dy * timeToReachAI;
+        
+        // Uwzględnij odbicia od ścian
+        while (predictedY < 0 || predictedY > 300) {
+            if (predictedY < 0) {
+                predictedY = -predictedY;
+            } else if (predictedY > 300) {
+                predictedY = 600 - predictedY;
+            }
+        }
+        
+        pongGame.ai.targetY = predictedY - pongGame.paddleHeight / 2;
     } else {
-        pongGame.ai.y = Math.min(220, pongGame.ai.y + pongGame.ai.speed);
+        // Piłka leci w stronę gracza - wróć do środka
+        pongGame.ai.targetY = 150 - pongGame.paddleHeight / 2;
     }
+    
+    // Płynny ruch AI do celu
+    const diff = pongGame.ai.targetY - pongGame.ai.y;
+    const maxMove = pongGame.ai.speed;
+    
+    if (Math.abs(diff) > maxMove) {
+        pongGame.ai.y += diff > 0 ? maxMove : -maxMove;
+    } else {
+        pongGame.ai.y = pongGame.ai.targetY;
+    }
+    
+    // Ograniczenia dla AI
+    pongGame.ai.y = Math.max(0, Math.min(300 - pongGame.paddleHeight, pongGame.ai.y));
     
     document.getElementById('pongScore').textContent = 
         `Człowiek: ${pongGame.player.score} | AI: ${pongGame.ai.score}`;
@@ -660,12 +826,33 @@ function drawPong() {
     ctx.stroke();
     ctx.setLineDash([]);
     
-    // Paletki
-    ctx.fillStyle = '#00ff00';
+    // Paletki z gradientem
+    const playerGradient = ctx.createLinearGradient(10, 0, 10 + pongGame.paddleWidth, 0);
+    playerGradient.addColorStop(0, '#00ff00');
+    playerGradient.addColorStop(1, '#00aa00');
+    ctx.fillStyle = playerGradient;
     ctx.fillRect(10, pongGame.player.y, pongGame.paddleWidth, pongGame.paddleHeight);
+    
+    const aiGradient = ctx.createLinearGradient(575, 0, 575 + pongGame.paddleWidth, 0);
+    aiGradient.addColorStop(0, '#ff0000');
+    aiGradient.addColorStop(1, '#aa0000');
+    ctx.fillStyle = aiGradient;
     ctx.fillRect(575, pongGame.ai.y, pongGame.paddleWidth, pongGame.paddleHeight);
     
-    // Piłka
+    // Piłka z efektem świecenia
+    const gradient = ctx.createRadialGradient(
+        pongGame.ball.x, pongGame.ball.y, 0,
+        pongGame.ball.x, pongGame.ball.y, pongGame.ball.radius * 2
+    );
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(0.5, '#ff00ff');
+    gradient.addColorStop(1, 'rgba(255, 0, 255, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(pongGame.ball.x, pongGame.ball.y, pongGame.ball.radius * 2, 0, Math.PI * 2);
+    ctx.fill();
+    
     ctx.fillStyle = '#ff00ff';
     ctx.beginPath();
     ctx.arc(pongGame.ball.x, pongGame.ball.y, pongGame.ball.radius, 0, Math.PI * 2);
@@ -913,17 +1100,10 @@ function resetBreakout() {
     initBreakout();
 }
 
-// ===== WORDLE GAME =====
+// ===== IMPROVED WORDLE GAME WITH MULTIPLE WORD LENGTHS =====
 const wordleGame = {
-    wordList: [
-        'KWANT', 'LASER', 'PLAZM', 'CYBER', 'MATRIX', 'PIXEL', 'ROBOT', 'KODER',
-        'BAJTY', 'CACHE', 'CLOUD', 'DEBUG', 'FLASH', 'MODEM', 'MACRO', 'LOGIC',
-        'VIRUS', 'STACK', 'SHELL', 'PATCH', 'PROXY', 'QUERY', 'REGEX', 'SCOPE',
-        'SETUP', 'SPACE', 'SPAWN', 'SPEED', 'SPLIT', 'STYLE', 'SUPER', 'SWING',
-        'SYNCH', 'TABLE', 'TOKEN', 'TOUCH', 'TRACK', 'TREND', 'TURBO', 'ULTRA',
-        'UNITY', 'VALUE', 'WATCH', 'WORLD', 'ZEBRA', 'AUDIO', 'BLEND', 'BOOST',
-        'BRAIN', 'CHAIN', 'CHAOS', 'CHARM', 'CHESS', 'CLOCK', 'CORAL', 'CRAFT'
-    ],
+    currentWordLength: 5,
+    wordList: [],
     usedWords: [],
     currentWord: '',
     currentRow: 0,
@@ -931,27 +1111,52 @@ const wordleGame = {
     gameBoard: [],
     keyboardState: {},
     gameActive: false,
+    attempts: 6,
     
     init() {
+        // Ustaw liczbę prób na podstawie długości słowa
+        if (this.currentWordLength === 3) {
+            this.attempts = 4;
+        } else if (this.currentWordLength === 4) {
+            this.attempts = 5;
+        } else {
+            this.attempts = 6;
+        }
+        
+        // Ustaw odpowiednią listę słów
+        this.wordList = wordleWords[this.currentWordLength] || wordleWords[5];
+        
+        // Aktualizuj UI
+        document.getElementById('wordleLetterCount').textContent = this.currentWordLength;
+        document.getElementById('wordleModeBadge').textContent = 
+            this.currentWordLength === 3 ? 'Tryb: Łatwy' :
+            this.currentWordLength === 4 ? 'Tryb: Średni' : 'Tryb: Trudny';
+        
+        // Ustaw CSS variable dla grid
+        document.documentElement.style.setProperty('--word-length', this.currentWordLength);
+        
         this.loadUsedWords();
         this.createBoard();
         this.createKeyboard();
         this.selectNewWord();
         this.gameActive = true;
+        document.getElementById('wordleWarning').textContent = '';
     },
     
     loadUsedWords() {
-        const saved = localStorage.getItem('wordleUsedWords');
+        const key = `wordleUsedWords_${this.currentWordLength}`;
+        const saved = localStorage.getItem(key);
         this.usedWords = saved ? JSON.parse(saved) : [];
         
         if (this.usedWords.length >= this.wordList.length - 1) {
             this.usedWords = [];
-            localStorage.removeItem('wordleUsedWords');
+            localStorage.removeItem(key);
         }
     },
     
     saveUsedWords() {
-        localStorage.setItem('wordleUsedWords', JSON.stringify(this.usedWords));
+        const key = `wordleUsedWords_${this.currentWordLength}`;
+        localStorage.setItem(key, JSON.stringify(this.usedWords));
     },
     
     selectNewWord() {
@@ -977,12 +1182,12 @@ const wordleGame = {
         board.innerHTML = '';
         this.gameBoard = [];
         
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < this.attempts; i++) {
             const row = document.createElement('div');
             row.className = 'wordle-row';
             const rowTiles = [];
             
-            for (let j = 0; j < 5; j++) {
+            for (let j = 0; j < this.currentWordLength; j++) {
                 const tile = document.createElement('div');
                 tile.className = 'wordle-tile';
                 tile.id = `tile-${i}-${j}`;
@@ -1004,6 +1209,11 @@ const wordleGame = {
             ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
             ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫']
         ];
+        
+        // Dodaj polskie znaki jeśli tryb 3 lub 4 literowy
+        if (this.currentWordLength <= 4) {
+            rows[1].push('Ą', 'Ć', 'Ę', 'Ł', 'Ń', 'Ó', 'Ś', 'Ź', 'Ż');
+        }
         
         rows.forEach(row => {
             const rowDiv = document.createElement('div');
@@ -1044,13 +1254,13 @@ const wordleGame = {
             this.submitGuess();
         } else if (key === 'backspace') {
             this.deleteLetter();
-        } else if (key.length === 1 && key.match(/[a-z]/i)) {
+        } else if (key.length === 1 && key.match(/[a-ząćęłńóśźż]/i)) {
             this.addLetter(key.toUpperCase());
         }
     },
     
     addLetter(letter) {
-        if (this.currentTile < 5 && this.currentRow < 6) {
+        if (this.currentTile < this.currentWordLength && this.currentRow < this.attempts) {
             const tile = document.getElementById(`tile-${this.currentRow}-${this.currentTile}`);
             tile.textContent = letter;
             tile.classList.add('filled');
@@ -1069,13 +1279,37 @@ const wordleGame = {
         }
     },
     
+    isValidWord(word) {
+        return this.wordList.includes(word);
+    },
+    
     submitGuess() {
-        if (this.currentTile !== 5) {
-            this.showMessage('Słowo musi mieć 5 liter!');
+        if (this.currentTile !== this.currentWordLength) {
+            this.showMessage(`Słowo musi mieć ${this.currentWordLength} liter!`);
             return;
         }
         
         const guess = this.gameBoard[this.currentRow].join('');
+        
+        // Sprawdź czy słowo jest prawidłowe
+        if (!this.isValidWord(guess)) {
+            document.getElementById('wordleWarning').textContent = 'To nie jest prawidłowe słowo!';
+            
+            // Animacja trzęsienia dla nieprawidłowego słowa
+            for (let i = 0; i < this.currentWordLength; i++) {
+                const tile = document.getElementById(`tile-${this.currentRow}-${i}`);
+                tile.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    tile.style.animation = '';
+                }, 500);
+            }
+            
+            setTimeout(() => {
+                document.getElementById('wordleWarning').textContent = '';
+            }, 2000);
+            
+            return;
+        }
         
         const letterCount = {};
         for (let letter of this.currentWord) {
@@ -1084,14 +1318,14 @@ const wordleGame = {
         
         const tileStates = [];
         
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < this.currentWordLength; i++) {
             if (guess[i] === this.currentWord[i]) {
                 tileStates[i] = 'correct';
                 letterCount[guess[i]]--;
             }
         }
         
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < this.currentWordLength; i++) {
             if (tileStates[i]) continue;
             
             if (letterCount[guess[i]] > 0) {
@@ -1124,7 +1358,7 @@ const wordleGame = {
                 this.gameActive = false;
                 this.showMessage('🎉 BRAWO! Odgadłeś słowo!', 'win');
                 statsManager.updateWordle(true);
-            } else if (this.currentRow === 5) {
+            } else if (this.currentRow === this.attempts - 1) {
                 this.gameActive = false;
                 this.showMessage(`Przegrałeś! Słowo to: ${this.currentWord}`, 'lose');
                 statsManager.updateWordle(false);
@@ -1132,7 +1366,7 @@ const wordleGame = {
                 this.currentRow++;
                 this.currentTile = 0;
             }
-        }, 600);
+        }, this.currentWordLength * 100 + 100);
     },
     
     showMessage(text, type = '') {
@@ -1164,10 +1398,11 @@ const wordleGame = {
         
         document.getElementById('wordleMessage').textContent = '';
         document.getElementById('wordleMessage').className = 'wordle-message';
+        document.getElementById('wordleWarning').textContent = '';
         
         this.selectNewWord();
         
-        this.gameBoard = Array(6).fill().map(() => Array(5).fill(''));
+        this.gameBoard = Array(this.attempts).fill().map(() => Array(this.currentWordLength).fill(''));
     }
 };
 
@@ -1246,24 +1481,28 @@ document.addEventListener('keydown', (e) => {
                 if (prevDy === 0) {
                     snakeGame.dx = 0;
                     snakeGame.dy = -20;
+                    snakeGame.direction = 'up';
                 }
                 break;
             case 'down':
                 if (prevDy === 0) {
                     snakeGame.dx = 0;
                     snakeGame.dy = 20;
+                    snakeGame.direction = 'down';
                 }
                 break;
             case 'left':
                 if (prevDx === 0) {
                     snakeGame.dx = -20;
                     snakeGame.dy = 0;
+                    snakeGame.direction = 'left';
                 }
                 break;
             case 'right':
                 if (prevDx === 0) {
                     snakeGame.dx = 20;
                     snakeGame.dy = 0;
+                    snakeGame.direction = 'right';
                 }
                 break;
         }
@@ -1295,5 +1534,5 @@ document.addEventListener('DOMContentLoaded', () => {
         themeManager.toggle();
     });
     
-    showNotification('🎮 Witaj w Gaming Hub! Wybierz poziom trudności i graj!');
+    showNotification('🎮 Witaj w Gaming Hub! Wybierz grę i baw się dobrze!');
 });

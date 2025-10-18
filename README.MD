@@ -170,6 +170,93 @@
   - Poprawione czyszczenie interwałów
   - Lepsze zarządzanie stanem gier
 
+**v0.35** - **Major Graphics & Gameplay Improvements**
+
+### 🐍 Quantum Snake - Kompletny Remaster Grafiki
+- **Realistyczna grafika węża:**
+  - Głowa węża z oczami i źrenicami
+  - Gradientowe kolory ciała węża (ciemniejące ku ogonowi)
+  - Płynne, okrągłe segmenty zamiast kwadratowych
+  - Animowane oczy zmieniające się z kierunkiem ruchu
+- **Ulepszone jedzenie:**
+  - Realistyczne jabłko z blaskiem i liściem
+  - Efekty świetlne i gradienty
+- **Poprawiony Game Over screen:**
+  - Półprzezroczyste tło
+  - Wyświetlanie końcowego wyniku
+
+### 🏓 Cyber Pong - Zaawansowane AI i Efekty Wizualne
+- **Inteligentne AI:**
+  - Przewidywanie trajektorii piłki z uwzględnieniem odbić od ścian
+  - Płynny ruch do przewidywanej pozycji
+  - Różne zachowania w zależności od kierunku piłki
+- **Efekty wizualne:**
+  - Gradientowe paletki (zielony dla gracza, czerwony dla AI)
+  - Piłka z efektem świecenia i podwójnym promieniem
+  - Poprawione kolizje i fizyka odbić
+- **Optymalizacja ruchu:**
+  - Płynniejsze sterowanie paletką
+  - Poprawione ograniczenia ruchu
+
+### 🔤 Quantum Wordle - Tryby Wielopoziomowe
+- **3 Tryby gry:**
+  - **3-literowy** (łatwy) - 4 próby, polskie słowa + podstawowe angielskie
+  - **4-literowy** (średni) - 5 prób, mieszane słowa polsko-angielskie  
+  - **5-literowy** (trudny) - 6 prób, zaawansowane słowa technologiczne
+- **Rozszerzona lista słów:**
+  - 200+ słów podzielonych na kategorie długości
+  - Polskie znaki diakrytyczne w trybach łatwiejszych
+  - Słownictwo technologiczne i codzienne
+- **Ulepszenia interfejsu:**
+  - Dynamiczna klawiatura z polskimi znakami
+  - Automatyczne dostosowanie liczby prób
+  - CSS variables dla responsywności
+- **System walidacji:**
+  - Sprawdzanie czy słowo istnieje w słowniku
+  - Animacja trzęsienia dla nieprawidłowych słów
+  - Komunikaty ostrzegawcze
+
+### 🎮 Ogólne Ulepszenia Systemowe
+- **Ulepszony system wyboru trybów:**
+  - Modal wyboru długości słowa dla Wordle
+  - Automatyczne przełączanie między trybami
+- **Poprawiona fizyka gier:**
+  - Dokładniejsze kolizje w Pong
+  - Lepsze odbicia od ścian i paletek
+  - Poprawione przewidywanie ruchu AI
+- **Optymalizacja wydajności:**
+  - Lepsze zarządzanie pamięcią
+  - Zmniejszone zużycie CPU
+  - Płynniejsze animacje
+
+### 🐛 Poprawki Błędów
+- **Snake:**
+  - Poprawiona grafika głowy i oczu
+  - Lepsze wykrywanie kolizji
+- **Pong:**
+  - Naprawione AI (teraz właściwie przewiduje ruch piłki)
+  - Poprawione odbicia od krawędzi
+  - Lepsze ograniczenia ruchu paletek
+- **Wordle:**
+  - Naprawiona walidacja słów
+  - Poprawione animacje klawiatury
+  - Lepsze zarządzanie stanem gry
+
+### 📊 Statystyki i Postęp
+- **Rozszerzony system statystyk:**
+  - Oddzielne śledzenie dla każdego trybu Wordle
+  - Lepsze powiadomienia o rekordach
+  - Ulepszone zapisywanie w localStorage
+
+### 🎨 Doświadczenie Użytkownika
+- **Płynniejsze przejścia:**
+  - Lepsze animacje między stanami gry
+  - Poprawione timingi
+- **Responsywność:**
+  - Lepsze dostosowanie do różnych rozdzielczości
+  - Optymalizacja mobilna
+
+
 
 ## Opis aplikacji
 
