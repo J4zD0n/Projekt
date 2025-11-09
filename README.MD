@@ -201,45 +201,6 @@
 - Unified scoring system
 - Cross-game progression
 
-## v0.60 - Ultimate Gaming Experience
 
-### Nowe Gry
-7. 🎯 **Archery Challenge** - gra zręcznościowa z łukiem i celami
-8. 🧩 **Memory Cards** - gra pamięciowa z parowaniem kart
-9. 🌊 **Surf Rider** - gra z surfingiem i unikaniem przeszkód
 
-### System Społecznościowy
-- **Leaderboard** - ranking globalny i znajomych
-- **Friend System** - dodawanie znajomych i wyzwania
-- **Clans/Guilds** - tworzenie klanów i rywalizacja drużynowa
-
-### Zaawansowane Statystyki
-- **Analytics Dashboard** - szczegółowe analizy postępów
-- **Heat Maps** - wizualizacja osiągnięć w grach
-- **Progress Tracking** - śledzenie celów długoterminowych
-
-### System Eventów
-- **Seasonal Events** - wydarzenia sezonowe z nagrodami
-- **Tournaments** - turnieje z nagrodami
-- **Special Challenges** - wyjątkowe wyzwania czasowe
-
-### Personalizacja
-- **Custom Themes** - tworzenie własnych motywów
-- **Game Skins** - różne skórki dla każdej gry
-- **UI Customization** - personalizacja interfejsu
-
-### Platforma Mobilna
-- **Mobile App** - dedykowana aplikacja mobilna
-- **Cross-Platform Sync** - synchronizacja między urządzeniami
-- **Touch Optimizations** - optymalizacje dla urządzeń dotykowych
-
-### Integracje Zewnętrzne
-- **Social Media Sharing** - udostępnianie osiągnięć
-- **Cloud Saves** - zapisy w chmurze
-- **API dla Deweloperów** - możliwość tworzenia własnych gier
-
-### AI Enhancements
-- **Adaptive Difficulty** - AI dostosowujące trudność do umiejętności gracza
-- **Personalized Challenges** - wyzwania dopasowane do stylu gry
-- **Smart Recommendations** - rekomendacje gier i wyzwań
 
