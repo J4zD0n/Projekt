@@ -2,162 +2,704 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Gaming Universe - Professional Gaming Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaming Hub - Your Game Library</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="particles" id="particles"></div>
-
-  <div class="container">
-    <div class="header">
-      <h1>🌟 GAMING HUB 🌟</h1>
-      <p>Profesjonalna Platforma Gier</p>
-      <div class="toolbar">
-        <button id="statsBtn" class="control-btn small">📊 Statystyki</button>
-        <button id="themeBtn" class="control-btn small">🎨 Motyw</button>
+  
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar-content">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <span class="brand-name">GAMING HUB</span>
       </div>
-    </div>
-
-    <div id="statsModal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>📊 Twoje Statystyki</h2>
-        <div id="statsContent"></div>
-      </div>
-    </div>
-
-    <div id="difficultyModal" class="modal hidden">
-      <div class="modal-content">
-        <h2 id="difficultyTitle">Wybierz poziom trudności</h2>
-        <div id="difficultyOptions" class="difficulty-grid"></div>
-      </div>
-    </div>
-
-    <div id="wordleModal" class="modal hidden">
-      <div class="modal-content">
-        <h2>🔤 Wybierz tryb gry Wordle</h2>
-        <div class="wordle-modes">
-          <div class="mode-card" onclick="startWordleMode(3)">
-            <h3>📝 Krótkie słowa</h3>
-            <p>3-literowe słowa</p>
-            <p class="mode-example">np. KOT, DOM, JAŚ</p>
-            <span class="mode-difficulty easy">Łatwy</span>
+      
+      <!-- Player XP Widget -->
+      <div class="player-xp-widget">
+        <div class="player-level-badge">
+          <span class="level-icon">⭐</span>
+          <span class="level-number" id="topBarLevel">1</span>
+        </div>
+        <div class="xp-bar-container">
+          <div class="xp-bar">
+            <div class="xp-fill" id="topBarXPFill" style="width: 0%"></div>
           </div>
-          <div class="mode-card" onclick="startWordleMode(4)">
-            <h3>📖 Średnie słowa</h3>
-            <p>4-literowe słowa</p>
-            <p class="mode-example">np. KAWA, MOST, CZAS</p>
-            <span class="mode-difficulty medium">Średni</span>
+          <span class="xp-text" id="topBarXPText">0 / 100</span>
+        </div>
+      </div>
+      
+      <div class="top-actions">
+        <button class="icon-btn" id="dailyChallengeBtn" title="Dzienne Wyzwanie">
+          <span class="icon">📅</span>
+        </button>
+        <button class="icon-btn" id="soundBtn" title="Dźwięk">
+          <span class="icon" id="soundIcon">🔊</span>
+        </button>
+        <button class="icon-btn" id="achievementsBtn" title="Osiągnięcia">
+          <span class="icon">🏆</span>
+        </button>
+        <button class="icon-btn" id="settingsBtn" title="Ustawienia">
+          <span class="icon">⚙️</span>
+        </button>
+        <button class="icon-btn" id="themeBtn" title="Zmień motyw">
+          <span class="icon">🌓</span>
+        </button>
+        <!-- Dodane brakujące przyciski -->
+        <button class="icon-btn" id="shopBtn" title="Sklep">
+          <span class="icon">🛒</span>
+        </button>
+        <button class="icon-btn" id="profileBtn" title="Profil">
+          <span class="icon">👤</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active" id="gamesNavBtn">
+          <span class="nav-icon">🎮</span>
+          <span class="nav-label">Biblioteka Gier</span>
+        </a>
+        <a href="#" class="nav-item" id="achievementsNavBtn">
+          <span class="nav-icon">🏆</span>
+          <span class="nav-label">Osiągnięcia</span>
+        </a>
+        <a href="#" class="nav-item" id="settingsNavBtn">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Ustawienia</span>
+        </a>
+        <!-- Dodane brakujące elementy nawigacji -->
+        <a href="#" class="nav-item" id="shopNavBtn">
+          <span class="nav-icon">🛒</span>
+          <span class="nav-label">Sklep</span>
+        </a>
+        <a href="#" class="nav-item" id="profileNavBtn">
+          <span class="nav-icon">👤</span>
+          <span class="nav-label">Profil</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Game Library -->
+    <section class="content-area">
+      <div class="section-header">
+        <h1 class="section-title">Twoje Gry</h1>
+        <p class="section-subtitle">Wybierz grę i zacznij rozgrywkę</p>
+      </div>
+
+      <div id="gameMenu" class="game-library">
+        
+        <!-- Snake Game Card -->
+        <div class="game-tile">
+          <div class="game-cover snake-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🐍</div>
+              <div class="cover-gradient"></div>
+            </div>
           </div>
-          <div class="mode-card" onclick="startWordleMode(5)">
-            <h3>📚 Długie słowa</h3>
-            <p>5-literowe słowa</p>
-            <p class="mode-example">np. KWIAT, MOTOR, PRACA</p>
-            <span class="mode-difficulty hard">Trudny</span>
+          <div class="game-info">
+            <h3 class="game-name">Snake</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Klasyka</span>
+              <span class="meta-score">★ <span id="snakeBest">0</span></span>
+            </div>
+            <p class="game-desc">Klasyczny wąż - zbieraj punkty i rośnij</p>
+            <button class="play-button" onclick="selectDifficulty('snake')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div id="gameMenu" class="games-grid">
-      <div class="game-card">
-        <h3>🐍 Quantum Snake</h3>
-        <p>Klasyczny wąż w kosmicznej odsłonie! Zbieraj energia-kule i unikaj kolizji.</p>
-        <div class="game-stats">
-          <span>Najlepszy wynik: <span id="snakeBest">0</span></span>
+        <!-- Pong Game Card -->
+        <div class="game-tile">
+          <div class="game-cover pong-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🏓</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Pong</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Retro</span>
+              <span class="meta-score">★ <span id="pongBest">0</span></span>
+            </div>
+            <p class="game-desc">Legendarny ping-pong przeciwko AI</p>
+            <button class="play-button" onclick="selectDifficulty('pong')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
         </div>
-        <button class="play-btn" onclick="selectDifficulty('snake')">Rozpocznij Misję</button>
-      </div>
-      <div class="game-card">
-        <h3>🏓 Cyber Pong</h3>
-        <p>Retro tenis w holograficznej rzeczywistości! Odbijaj świetlną kulę energii.</p>
-        <div class="game-stats">
-          <span>Najlepszy wynik: <span id="pongBest">0</span></span>
+
+        <!-- Wordle Game Card -->
+        <div class="game-tile">
+          <div class="game-cover wordle-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🔤</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Wordle</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Słowna</span>
+              <span class="meta-score">✓ <span id="wordleSolved">0</span></span>
+            </div>
+            <p class="game-desc">Odgadnij ukryte słowo w 6 próbach</p>
+            <button class="play-button" onclick="selectWordleMode()">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
         </div>
-        <button class="play-btn" onclick="selectDifficulty('pong')">Aktywuj</button>
-      </div>
-      <div class="game-card">
-        <h3>🧱 Neo Breakout</h3>
-        <p>Rozbijaj cyfrowe bloki w wirtualnej matrycy! Przejdź przez wszystkie poziomy!</p>
-        <div class="game-stats">
-          <span>Najwyższy poziom: <span id="breakoutBest">0</span></span>
+
+        <!-- Simon Game Card -->
+        <div class="game-tile">
+          <div class="game-cover simon-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🎵</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Simon Says</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Pamięć</span>
+              <span class="meta-score">🎯 <span id="simonBest">0</span></span>
+            </div>
+            <p class="game-desc">Zapamiętaj i powtórz sekwencję</p>
+            <button class="play-button" onclick="uiStart('simon')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
         </div>
-        <button class="play-btn" onclick="uiStart('breakout')">Włam się</button>
-      </div>
-      <div class="game-card">
-        <h3>🔤 Quantum Wordle</h3>
-        <p>Odgadnij sekretne słowo! Wybierz długość słowa od 3 do 5 liter.</p>
-        <div class="game-stats">
-          <span>Rozwiązane: <span id="wordleSolved">0</span></span>
+
+        <!-- Duck Hunt Game Card -->
+        <div class="game-tile">
+          <div class="game-cover duck-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🦆</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Duck Hunt</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Zręcznościowa</span>
+              <span class="meta-score">★ <span id="duckBest">0</span></span>
+            </div>
+            <p class="game-desc">Leć między rurami, nie spadnij!</p>
+            <button class="play-button" onclick="uiStart('duck')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
         </div>
-        <button class="play-btn" onclick="selectWordleMode()">Dekoduj</button>
-      </div>
-    </div>
 
-    <div id="snakeGame" class="game-area">
-      <h2>🐍 QUANTUM SNAKE</h2>
-      <div class="instructions">
-        <strong>Sterowanie Cyborg:</strong> Strzałki lub WASD
-        <span class="difficulty-badge" id="snakeDifficulty"></span>
-      </div>
-      <div class="score" id="snakeScore">Energia: 0</div>
-      <canvas id="snakeCanvas" width="400" height="400"></canvas>
-      <div class="game-controls">
-        <button class="control-btn" onclick="resetSnake()">Reset Quantum</button>
-        <button class="back-btn" onclick="backToMenu()">Wyjście</button>
-      </div>
-    </div>
+        <!-- Mario Game Card -->
+        <div class="game-tile">
+          <div class="game-cover mario-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🍄</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Mini Mario</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Platformer</span>
+              <span class="meta-score">Lvl <span id="marioBest">0</span></span>
+            </div>
+            <p class="game-desc">Skacz, zbieraj monety, osiągnij flagę</p>
+            <button class="play-button" onclick="uiStart('mario')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
+        </div>
 
-    <div id="pongGame" class="game-area">
-      <h2>🏓 CYBER PONG</h2>
-      <div class="instructions">
-        <strong>Kontrola Holo:</strong> Strzałki góra/dół lub W/S (przytrzymaj dla płynnego ruchu)
-        <span class="difficulty-badge" id="pongDifficulty"></span>
-      </div>
-      <div class="score" id="pongScore">Człowiek: 0 | AI: 0</div>
-      <canvas id="pongCanvas" width="600" height="300"></canvas>
-      <div class="game-controls">
-        <button class="control-btn" onclick="resetPong()">Restart Systemu</button>
-        <button class="back-btn" onclick="backToMenu()">Wyjście</button>
-      </div>
-    </div>
+        <!-- Racing Game Card -->
+        <div class="game-tile">
+          <div class="game-cover racing-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🏎️</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Speed Racer</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Wyścigi</span>
+              <span class="meta-score">🏁 <span id="racingBest">0</span>m</span>
+            </div>
+            <p class="game-desc">Omijaj samochody, jedź jak najdłużej</p>
+            <button class="play-button" onclick="uiStart('racing')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
+        </div>
 
-    <div id="breakoutGame" class="game-area">
-      <h2>🧱 NEO BREAKOUT</h2>
-      <div class="instructions">
-        <strong>Cyber Interface:</strong> Strzałki lewo/prawo lub A/D (przytrzymaj dla płynnego ruchu)
-        <span class="level-badge">Poziom: <span id="breakoutLevel">1</span></span>
-      </div>
-      <div class="score" id="breakoutScore">Hack Points: 0 | System Lives: 3</div>
-      <canvas id="breakoutCanvas" width="500" height="400"></canvas>
-      <div class="game-controls">
-        <button class="control-btn" onclick="resetBreakout()">Reinicjalizacja</button>
-        <button class="back-btn" onclick="backToMenu()">Wyjście</button>
-      </div>
-    </div>
+        <!-- Tetris Game Card -->
+        <div class="game-tile">
+          <div class="game-cover tetris-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🟦</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Tetris</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Klasyka</span>
+              <span class="meta-score">★ <span id="tetrisBest">0</span></span>
+            </div>
+            <p class="game-desc">Układaj klocki i czyść linie</p>
+            <button class="play-button" onclick="uiStart('tetris')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
+        </div>
 
-    <div id="wordleGame" class="game-area">
-      <h2>🔤 QUANTUM WORDLE</h2>
-      <div class="instructions">
-        <strong>Dekoder:</strong> Wpisz <span id="wordleLetterCount">5</span>-literowe słowo i naciśnij ENTER
-        <span class="wordle-mode-badge" id="wordleModeBadge"></span>
-        <span id="wordleWarning" style="color: #ff4444; display: block; margin-top: 10px;"></span>
+        <!-- Breakout Game Card -->
+        <div class="game-tile">
+          <div class="game-cover breakout-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">🧱</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Breakout</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Arkada</span>
+              <span class="meta-score">★ <span id="breakoutBest">0</span></span>
+            </div>
+            <p class="game-desc">Rozbijaj cegły piłką i paletką</p>
+            <button class="play-button" onclick="uiStart('breakout')">
+              <span class="play-icon">▶</span>
+              <span>Graj</span>
+            </button>
+          </div>
+        </div>
+
       </div>
-      <div class="wordle-container">
-        <div id="wordleBoard" class="wordle-board"></div>
-        <div id="wordleKeyboard" class="wordle-keyboard"></div>
-        <div id="wordleMessage" class="wordle-message"></div>
+    </section>
+
+  </main>
+
+  <!-- Modals -->
+  <div id="achievementsModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('achievementsModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>🏆 Twoje Osiągnięcia</h2>
+        <button class="modal-close" onclick="closeModal('achievementsModal')">✕</button>
       </div>
-      <div class="game-controls">
-        <button class="control-btn" onclick="resetWordle()">Nowe Słowo</button>
-        <button class="control-btn" onclick="selectWordleMode()">Zmień Tryb</button>
-        <button class="back-btn" onclick="backToMenu()">Wyjście</button>
+      <div class="modal-body" id="achievementsContent"></div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('settingsModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>⚙️ Ustawienia</h2>
+        <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-section">
+          <h3>🔊 Dźwięk</h3>
+          <label class="setting-toggle">
+            <span>Efekty dźwiękowe</span>
+            <input type="checkbox" id="soundToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="settings-section">
+          <h3>🎨 Wygląd</h3>
+          <label class="setting-option">
+            <span>Kolor motywu</span>
+            <select id="accentColor">
+              <option value="#0070f3">Niebieski</option>
+              <option value="#00d95f">Zielony</option>
+              <option value="#ff0033">Czerwony</option>
+              <option value="#ff6b00">Pomarańczowy</option>
+              <option value="#9d00ff">Fioletowy</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="settings-section">
+          <h3>📊 Dane</h3>
+          <button class="action-btn secondary" onclick="resetAllProgress()">
+            Resetuj wszystkie osiągnięcia
+          </button>
+        </div>
+
+        <div class="settings-section">
+          <h3>ℹ️ Informacje</h3>
+          <p class="setting-info">Gaming Hub v4.0</p>
+          <p class="setting-info">9 niesamowitych gier!</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="countdown" class="countdown hidden"></div>
+  <div id="difficultyModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('difficultyModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="difficultyTitle">Wybierz poziom trudności</h2>
+        <button class="modal-close" onclick="closeModal('difficultyModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="difficultyOptions" class="difficulty-options"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="wordleModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('wordleModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Wybierz tryb Wordle</h2>
+        <button class="modal-close" onclick="closeModal('wordleModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="wordle-modes">
+          <div class="wordle-mode-card" onclick="startWordleMode(4)">
+            <div class="mode-number">4</div>
+            <div class="mode-name">Łatwy</div>
+            <div class="mode-info">4-literowe słowa</div>
+          </div>
+          <div class="wordle-mode-card" onclick="startWordleMode(5)">
+            <div class="mode-number">5</div>
+            <div class="mode-name">Średni</div>
+            <div class="mode-info">5-literowe słowa</div>
+          </div>
+          <div class="wordle-mode-card" onclick="startWordleMode(6)">
+            <div class="mode-number">6</div>
+            <div class="mode-name">Trudny</div>
+            <div class="mode-info">6-literowe słowa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Challenge Modal -->
+  <div id="dailyChallengeModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('dailyChallengeModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>📅 Dzisiejsze Wyzwanie</h2>
+        <button class="modal-close" onclick="closeModal('dailyChallengeModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="daily-challenge-content">
+          <div class="challenge-icon">🏆</div>
+          <h3 id="challengeTitle">Loading...</h3>
+          <p id="challengeDescription">Loading...</p>
+          <div class="challenge-reward">
+            <span>🎁 Nagroda:</span>
+            <strong id="challengeReward">+200 XP</strong>
+          </div>
+          <div class="challenge-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="challengeProgress" style="width: 0%"></div>
+            </div>
+            <span id="challengeProgressText">0 / 100</span>
+          </div>
+          <button class="action-btn primary" id="startChallengeBtn" onclick="startDailyChallenge()">
+            Rozpocznij Wyzwanie
+          </button>
+        </div>
+        <div class="streak-container">
+          <div class="streak-badge">
+            <span class="streak-icon">🔥</span>
+            <div class="streak-info">
+              <strong id="streakDays">0</strong>
+              <span>dni z rzędu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Modal -->
+  <div id="shopModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('shopModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>🛒 Sklep</h2>
+        <button class="modal-close" onclick="closeModal('shopModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="shopContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('profileModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>👤 Profil Gracza</h2>
+        <button class="modal-close" onclick="closeModal('profileModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <span id="playerAvatar">👤</span>
+            <span id="playerFrame" class="profile-frame">⬜</span>
+          </div>
+          <div class="profile-info">
+            <h3>Poziom: <span id="profileLevel">1</span></h3>
+            <p>XP: <span id="profileXP">0 / 100</span></p>
+            <p>Łącznie XP: <span id="profileTotalXP">0</span></p>
+            <p>Monety: <span id="playerCoins">0</span> 🪙</p>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <h3>Statystyki</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Snake</span>
+              <span class="stat-value" id="profileSnakeBest">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Pong</span>
+              <span class="stat-value" id="profilePongBest">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Wordle</span>
+              <span class="stat-value" id="profileWordleSolved">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Simon</span>
+              <span class="stat-value" id="profileSimonBest">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reward Notification -->
+  <div id="rewardNotification" class="notification hidden">
+    <div class="reward-content">
+      <span class="reward-icon" id="rewardIcon">🎁</span>
+      <div class="reward-text">
+        <strong id="rewardText">Nagroda!</strong>
+        <span id="rewardDesc"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pause Menu -->
+  <div id="pauseMenu" class="pause-overlay hidden">
+    <div class="pause-box">
+      <h2>⏸️ PAUZA</h2>
+      <div class="pause-stats">
+        <div class="pause-stat">
+          <span class="stat-label">Poziom Gracza</span>
+          <span class="stat-value" id="pausePlayerLevel">1</span>
+        </div>
+        <div class="pause-stat">
+          <span class="stat-label">XP</span>
+          <span class="stat-value" id="pausePlayerXP">0/100</span>
+        </div>
+      </div>
+      <div class="pause-buttons">
+        <button class="pause-btn primary" onclick="togglePause()">
+          <span>▶</span> Kontynuuj
+        </button>
+        <button class="pause-btn secondary" onclick="resetCurrentGame()">
+          <span>🔄</span> Restart
+        </button>
+        <button class="pause-btn secondary" onclick="pauseBackToMenu()">
+          <span>🏠</span> Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Screens -->
+  
+  <!-- Snake Game -->
+  <div id="snakeGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🐍 Snake</h2>
+      <span class="difficulty-badge" id="snakeDifficulty"></span>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki lub WASD | ESC = Pauza</div>
+    <div class="game-score" id="snakeScore">Wynik: 0</div>
+    <canvas id="snakeCanvas" width="400" height="400"></canvas>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetSnake()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Pong Game -->
+  <div id="pongGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🏓 Pong</h2>
+      <span class="difficulty-badge" id="pongDifficulty"></span>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki góra/dół lub W/S | ESC = Pauza</div>
+    <div class="game-score" id="pongScore">Ty: 0 | AI: 0</div>
+    <canvas id="pongCanvas" width="600" height="300"></canvas>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetPong()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Wordle Game -->
+  <div id="wordleGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🔤 Wordle</h2>
+      <span class="wordle-mode-badge" id="wordleModeBadge"></span>
+    </div>
+    <div class="game-controls-info">
+      Wpisz <span id="wordleLetterCount">5</span>-literowe słowo i naciśnij ENTER
+    </div>
+    <div class="wordle-container">
+      <div id="wordleBoard" class="wordle-board"></div>
+      <div id="wordleKeyboard" class="wordle-keyboard"></div>
+      <div id="wordleMessage" class="wordle-message"></div>
+    </div>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetWordle()">Nowe Słowo</button>
+      <button class="action-btn secondary" onclick="selectWordleMode()">Zmień Tryb</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Simon Game -->
+  <div id="simonGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🎵 Simon Says</h2>
+    </div>
+    <div class="game-controls-info">Zapamiętaj i powtórz sekwencję kolorów</div>
+    <div class="game-score" id="simonScore">Poziom: 1 | Rekord: 0</div>
+    <div id="simonBoard" class="simon-board">
+      <div class="simon-btn simon-green" data-color="0"></div>
+      <div class="simon-btn simon-red" data-color="1"></div>
+      <div class="simon-btn simon-yellow" data-color="2"></div>
+      <div class="simon-btn simon-blue" data-color="3"></div>
+    </div>
+    <div class="game-actions">
+      <button class="action-btn secondary" id="simonStart">Start</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Duck Hunt Game -->
+  <div id="duckGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🦆 Duck Hunt</h2>
+    </div>
+    <div class="game-controls-info">Sterowanie: SPACJA lub KLIK | ESC = Pauza</div>
+    <div class="game-score" id="duckScore">Wynik: 0</div>
+    <canvas id="duckCanvas" width="400" height="400"></canvas>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetDuck()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Mario Game -->
+  <div id="marioGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🍄 Mini Mario</h2>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki lub WASD, SPACJA = skok | ESC = Pauza</div>
+    <div class="game-score" id="marioScore">Poziom: 1 | Monety: 0 | Wynik: 0</div>
+    <canvas id="marioCanvas" width="600" height="400"></canvas>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetMario()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Racing Game -->
+  <div id="racingGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🏎️ Speed Racer</h2>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki lewo/prawo lub A/D | ESC = Pauza</div>
+    <div class="game-score" id="racingScore">Dystans: 0m | Prędkość: 0</div>
+    <canvas id="racingCanvas" width="400" height="500"></canvas>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetRacing()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Tetris Game -->
+  <div id="tetrisGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🟦 Tetris</h2>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki, SPACJA = obróć, ↑ = hard drop | ESC = Pauza</div>
+    <div class="game-score" id="tetrisScore">Wynik: 0 | Linie: 0 | Poziom: 1</div>
+    <div class="tetris-container">
+      <canvas id="tetrisCanvas" width="300" height="600"></canvas>
+      <div class="tetris-sidebar">
+        <div class="next-piece-container">
+          <h3>Następny</h3>
+          <canvas id="nextPieceCanvas" width="100" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetTetris()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- Breakout Game -->
+  <div id="breakoutGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>🧱 Breakout</h2>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki lub mysz, SPACJA = start | ESC = Pauza</div>
+    <div class="game-score" id="breakoutScore">Wynik: 0 | Życia: 3 | Poziom: 1</div>
+    <canvas id="breakoutCanvas" width="600" height="500"></canvas>
+    <div class="game-actions">
+      <button class="action-btn secondary" onclick="resetBreakout()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- XP Level Up Notification -->
+  <div id="levelUpNotification" class="level-up-popup hidden">
+    <div class="level-up-content">
+      <div class="level-up-icon">⭐</div>
+      <h2>AWANS!</h2>
+      <p>Poziom <span id="newLevel">2</span></p>
+      <div class="level-up-rewards">
+        <span>🎁 Odblokowano nowe funkcje!</span>
+      </div>
+    </div>
+  </div>
 
   <div class="notification" id="notification"></div>
 
