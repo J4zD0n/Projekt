@@ -208,7 +208,7 @@
 - Chrome DevTools – wybór debuggera z możliwością ustawiania breakpointów i śledzenia zmiennych
 - Reprodukcja błędu – odblokowanie osiągnięcia w grze Snake – powiadomienie pojawia się, ale pasek XP pozostaje bez zmian
 - Wyizolowanie źródła – zlokalizowanie funkcji checkAchievements odpowiedzialnej za przyznawanie nagród
-- Identyfikacja przyczyny – brak wywołania levelSystem.addXP(50) w momencie odblokowania osiągnięcia
+- Identyfikacja przyczyny – brak wywołania levelSystem.addXP(50)  w momencie odblokowania osiągnięcia
 - Usunięcie defektu – dodanie brakującej linii kodu z wartością 50 punktów XP
 - Weryfikacja naprawy – ponowne odblokowanie osiągnięcia – pasek XP prawidłowo wzrasta
 - Uzupełnienie dokumentacji – opisanie procesu w pliku README

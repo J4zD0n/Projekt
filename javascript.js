@@ -925,6 +925,7 @@ const achievementsManager = {
         if (!ach.unlocked && value >= ach.points) {
           ach.unlocked = true;
           newUnlocks.push(ach.name);
+          levelSystem.addXP(50);
           
         }
       });
