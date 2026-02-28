@@ -356,6 +356,20 @@
     </div>
   </div>
 
+  <!-- Mario Level Select Modal -->
+  <div id="marioLevelSelectModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('marioLevelSelectModal')"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>🍄 Wybierz Poziom Mario</h2>
+        <button class="modal-close" onclick="closeModal('marioLevelSelectModal')">✕</button>
+      </div>
+      <div class="modal-body" id="marioLevelsContainer">
+        <!-- Poziomy będą dynamicznie dodane przez JavaScript -->
+      </div>
+    </div>
+  </div>
+
   <div id="difficultyModal" class="modal hidden">
     <div class="modal-backdrop" onclick="closeModal('difficultyModal')"></div>
     <div class="modal-box">
@@ -634,12 +648,13 @@
     <div class="game-screen-header">
       <h2>🦆 Duck Hunt</h2>
     </div>
-    <div class="game-controls-info">Sterowanie: SPACJA lub KLIK | ESC = Pauza</div>
-    <div class="game-score" id="duckScore">Wynik: 0</div>
+    <div class="game-controls-info">Sterowanie: SPACJA lub KLIK = skok | ESC = Pauza</div>
+    <div class="game-score" id="duckScore">Poziom: 1 | Wynik: 0/5</div>
     <canvas id="duckCanvas" width="400" height="400"></canvas>
     <div class="game-actions">
-      <button class="action-btn secondary" onclick="resetDuck()">Restart</button>
-      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+      <button class="action-btn secondary" onclick="resetDuck()">🔄 Restart</button>
+      <button class="action-btn secondary level-select" id="duckLevelSelectBtn">🎮 Wybierz Poziom</button>
+      <button class="action-btn primary back-to-menu" onclick="backToMenu()">⏪ POWRÓT DO MENU</button>
     </div>
   </div>
 
@@ -648,12 +663,13 @@
     <div class="game-screen-header">
       <h2>🍄 Mini Mario</h2>
     </div>
-    <div class="game-controls-info">Sterowanie: Strzałki lub WASD, SPACJA = skok | ESC = Pauza</div>
-    <div class="game-score" id="marioScore">Poziom: 1 | Monety: 0 | Wynik: 0</div>
+    <div class="game-controls-info">Sterowanie: A/D = lewo/prawo, W/SPACJA = skok | ESC = Pauza</div>
+    <div class="game-score" id="marioScore">Poziom: 1 | Monety: 0/3 | Wynik: 0 | Czas: 2:00</div>
     <canvas id="marioCanvas" width="600" height="400"></canvas>
     <div class="game-actions">
-      <button class="action-btn secondary" onclick="resetMario()">Restart</button>
-      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+      <button class="action-btn secondary" onclick="resetMario()">🔄 Restart</button>
+      <button class="action-btn secondary level-select" id="marioLevelSelectBtn">🎮 Wybierz Poziom</button>
+      <button class="action-btn primary back-to-menu" onclick="backToMenu()">⏪ POWRÓT DO MENU</button>
     </div>
   </div>
 

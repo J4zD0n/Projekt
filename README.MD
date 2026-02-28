@@ -222,3 +222,75 @@
 
 ### Rozdzielenie gier
 - rozdzieliłem wszystkie gry do osobnych plików, aby łatwiej mógłbym je edytować
+
+## v0.70 - Kompletna Rewolucja Systemu Leveli i Sklepu
+
+### Proces Rozwoju i Debugowania
+- Analiza potrzeb – identyfikacja braku systemu progresji w grach Duck Hunt i Mario
+- Projektowanie systemu poziomów – stworzenie architektury odblokowywania kolejnych etapów
+- Implementacja Duck Hunt – dodanie 3 poziomów z progresywnie rosnącą trudnością
+- Rozbudowa Mario – rozszerzenie z 3 do 5 unikalnych poziomów z własnymi parametrami
+- Debugowanie sklepu – identyfikacja problemu z zakupami (monety znikały, ale przedmioty nie były odblokowywane)
+- Identyfikacja przyczyny – brak inicjalizacji domyślnych przedmiotów i nieprawidłowa walidacja zakupów
+- Usunięcie defektu – dodanie automatycznego odblokowywania domyślnych awatarów i ramek, poprawa logiki buyShopItem
+- Weryfikacja naprawy – testowanie zakupów wszystkich przedmiotów – monety prawidłowo odejmowane, przedmioty odblokowywane
+- Optymalizacja sterowania – dodanie mechanizmu `canJump` w Duck Hunt zapobiegającego podwójnym skokom
+- Usprawnienie fizyki – implementacja `deltaTime` w Mario dla płynnych animacji niezależnie od klatek
+
+### System Leveli w Grach
+- Duck Hunt – dodanie 3 poziomów: "Pierwszy Lot" (5 rur), "Wyższy Lot" (8 rur), "Niebezpieczny Przelot" (12 rur)
+- Mario – rozszerzenie do 5 poziomów: "Pierwsze kroki", "Skalna ścieżka", "Górska wspinaczka", "Nocna przygoda", "Ostatnie wyzwanie"
+- System odblokowywania – postęp zapisywany w localStorage, odblokowywanie kolejnych poziomów po ukończeniu poprzednich
+- Zróżnicowane parametry – każdy poziom posiada unikalne ustawienia (grawitacja, prędkość, liczba wrogów, limit czasu)
+
+### Nowe Mechaniki w Mario
+- System żyć – 3 życia z możliwością utraty i resetu pozycji
+- Wrogowie – Goomby i Koopa Troopa z inteligentnym AI reagującym na krawędzie platform
+- Timer – limit czasu dla każdego poziomu (90-180 sekund)
+- Premie – dodatkowe punkty za pozostały czas i zebrane monety przy ukończeniu poziomu
+- Skakanie po wrogach – implementacja mechaniki znanej z oryginalnego Mario
+
+### System Ekonomii – Naprawa Sklepu
+- Problem – zakupy nie działały poprawnie (monety znikały, przedmioty nie były odblokowywane)
+- Przyczyna – brak inicjalizacji domyślnych przedmiotów i nieprawidłowa walidacja
+- Rozwiązanie – dodanie automatycznego odblokowywania domyślnych awatarów ('👤') i ramek ('⬜')
+- Poprawa logiki – walidacja istnienia przedmiotu i stanu posiadania przed zakupem
+- Komunikaty zwrotne – dodanie powiadomień o sukcesie/porażce transakcji
+- Odświeżanie widoku – automatyczne aktualizowanie sklepu po każdej transakcji
+
+### Nowe Przedmioty w Sklepie
+- Awatary – domyślny '👤', Smok (🐉), Rakieta (🚀), Czarodziej (🧙), Robot (🤖), Gwiazda (💫)
+- Ramki – domyślna '⬜', Lśniąca (✨), Ognista (🔥), Diamentowa (💎), Celownicza (🎯)
+
+### Interfejs Użytkownika
+- Wybór poziomów – jednolity system dla Duck Hunt i Mario z wizualnym oznaczeniem odblokowanych/zablokowanych poziomów
+- Ekrany ukończenia – Duck Hunt: zielony ekran z opcjami "Następny Poziom" i "Wybór Poziomu"; Mario: szczegółowe podsumowanie z przyciskami nawigacji
+- HUD w grach – Duck Hunt: pasek postępu; Mario: panel z monetami, życiami, wynikiem, timerem
+
+### Naprawione Błędy
+- Sklep – zakupy działają poprawnie (monety odejmowane, przedmioty odblokowywane)
+- Duck Hunt – eliminacja podwójnych skoków (mechanizm `canJump` z timeoutem 200ms)
+- Mario – poprawa kolizji z wrogami (prawidłowe rozpoznawanie skoku na wroga)
+- Mario – zapisywanie odblokowanych poziomów w localStorage
+- Duck Hunt – kolory rur dostosowane do poziomu
+- Mario – animowane monety i wrogowie
+- Mario – nocne tło dla poziomu 4 z gwiazdami
+- Inicjalizacja domyślnych przedmiotów w sklepie
+- Walidacja stanu gry przed wykonaniem akcji
+- Czyszczenie interwałów i animacji przy przejściach między poziomami
+
+### System Postępu
+- Duck Hunt – 3 poziomy: "Pierwszy Lot" (5 rur), "Wyższy Lot" (8 rur), "Niebezpieczny Przelot" (12 rur)
+- Mario – 5 poziomów o rosnącej trudności:
+  - Poziom 1: Łatwy – 180s, 2 wrogów
+  - Poziom 2: Średni – 150s, 3 wrogów
+  - Poziom 3: Trudny – 120s, 4 wrogów
+  - Poziom 4: Bardzo trudny – 150s, 5 wrogów, nocny motyw
+  - Poziom 5: Ekspert – 90s, 6 wrogów, ekstremalna platformówka
+
+### Optymalizacje Techniczne
+- Duck Hunt – dodanie flagi `canJump` zapobiegającej podwójnym skokom
+- Mario – implementacja `deltaTime` dla płynnych animacji niezależnie od klatek
+- Sklep – funkcja `fixShopBug()` do naprawy stanu sklepu przy starcie
+- LocalStorage – spójny system zapisu/odczytu dla wszystkich gier
+- Czyszczenie zasobów – zatrzymywanie wszystkich interwałów i animacji przy przejściach
