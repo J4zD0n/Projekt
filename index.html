@@ -46,7 +46,6 @@
         <button class="icon-btn" id="themeBtn" title="Zmień motyw">
           <span class="icon">🌓</span>
         </button>
-        <!-- Dodane brakujące przyciski -->
         <button class="icon-btn" id="shopBtn" title="Sklep">
           <span class="icon">🛒</span>
         </button>
@@ -75,7 +74,6 @@
           <span class="nav-icon">⚙️</span>
           <span class="nav-label">Ustawienia</span>
         </a>
-        <!-- Dodane brakujące elementy nawigacji -->
         <a href="#" class="nav-item" id="shopNavBtn">
           <span class="nav-icon">🛒</span>
           <span class="nav-label">Sklep</span>
@@ -243,7 +241,7 @@
               <span class="meta-score">🏁 <span id="racingBest">0</span>m</span>
             </div>
             <p class="game-desc">Omijaj samochody, jedź jak najdłużej</p>
-            <button class="play-button" onclick="uiStart('racing')">
+            <button class="play-button" onclick="selectDifficulty('racing')">
               <span class="play-icon">▶</span>
               <span>Graj</span>
             </button>
@@ -494,6 +492,26 @@
               <span class="stat-label">Simon</span>
               <span class="stat-value" id="profileSimonBest">0</span>
             </div>
+            <div class="stat-item">
+              <span class="stat-label">Duck Hunt</span>
+              <span class="stat-value" id="profileDuckBest">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Mario</span>
+              <span class="stat-value" id="profileMarioBest">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Racing</span>
+              <span class="stat-value" id="profileRacingBest">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tetris</span>
+              <span class="stat-value" id="profileTetrisBest">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Breakout</span>
+              <span class="stat-value" id="profileBreakoutBest">0</span>
+            </div>
           </div>
         </div>
       </div>
@@ -643,9 +661,10 @@
   <div id="racingGame" class="game-screen">
     <div class="game-screen-header">
       <h2>🏎️ Speed Racer</h2>
+      <span class="difficulty-badge" id="racingDifficulty"></span>
     </div>
     <div class="game-controls-info">Sterowanie: Strzałki lewo/prawo lub A/D | ESC = Pauza</div>
-    <div class="game-score" id="racingScore">Dystans: 0m | Prędkość: 0</div>
+    <div class="game-score" id="racingScore">Dystans: 0m | Wynik: 0 | Mnożnik: x1</div>
     <canvas id="racingCanvas" width="400" height="500"></canvas>
     <div class="game-actions">
       <button class="action-btn secondary" onclick="resetRacing()">Restart</button>
@@ -703,6 +722,16 @@
 
   <div class="notification" id="notification"></div>
 
+  <!-- Load all JavaScript files -->
   <script src="javascript.js"></script>
+  <script src="snake.js"></script>
+  <script src="pong.js"></script>
+  <script src="wordle.js"></script>
+  <script src="simon.js"></script>
+  <script src="duck.js"></script>
+  <script src="mario.js"></script>
+  <script src="racing.js"></script>
+  <script src="tetris.js"></script>
+  <script src="breakout.js"></script>
 </body>
 </html>

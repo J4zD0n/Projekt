@@ -216,3 +216,9 @@
 ### System Osiągnięć (Achievements)
 - Naprawa błędu – gracz otrzymuje teraz 50 punktów XP za każde odblokowane osiągnięcie
 - Poprawa responsywności – system nagród działa zgodnie z założeniami
+
+
+## v0.60 - ROZDZIELENIE GIER
+
+### Rozdzielenie gier
+- rozdzieliłem wszystkie gry do osobnych plików, aby łatwiej mógłbym je edytować
