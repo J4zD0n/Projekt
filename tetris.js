@@ -261,11 +261,35 @@ function drawTetris() {
     }
   }
   
-  // Rysowanie aktualnego klocka
+  // Rysowanie aktuakngo klocka i ghost piece (cienia)
   if (tetrisGame.currentPiece) {
-    ctx.fillStyle = tetrisGame.currentPiece.color;
     const shape = tetrisGame.currentPiece.shape;
     
+    // Oblicz y dla Ghost Piece
+    let ghostY = tetrisGame.currentY;
+    while (!checkCollision(0, ghostY - tetrisGame.currentY + 1)) {
+       ghostY++;
+    }
+    
+    // Rysuj Ghost Piece
+    ctx.fillStyle = tetrisGame.currentPiece.color;
+    ctx.globalAlpha = 0.2; // przezroczystoksc
+    for (let y = 0; y < shape.length; y++) {
+      for (let x = 0; x < shape[y].length; x++) {
+        if (shape[y][x]) {
+          const drawX = (tetrisGame.currentX + x) * 30;
+          const drawY = (ghostY + y) * 30;
+          ctx.fillRect(drawX + 1, drawY + 1, 28, 28);
+          ctx.strokeStyle = tetrisGame.currentPiece.color;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(drawX + 1, drawY + 1, 28, 28);
+        }
+      }
+    }
+    ctx.globalAlpha = 1.0; // reset
+    
+    // Rysuj Normalny Klocek
+    ctx.fillStyle = tetrisGame.currentPiece.color;
     for (let y = 0; y < shape.length; y++) {
       for (let x = 0; x < shape[y].length; x++) {
         if (shape[y][x]) {

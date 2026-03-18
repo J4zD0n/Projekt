@@ -101,6 +101,19 @@ body {
   gap: var(--spacing-sm);
 }
 
+/* ===== TUTORIAL MODAL STYLES ===== */
+.tutorial-box {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: tutorialEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes tutorialEnter {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .icon-btn {
   width: 44px;
   height: 44px;
@@ -371,41 +384,74 @@ body {
   font-weight: 600;
   color: var(--warning);
 }
-
 .game-desc {
   color: var(--text-secondary);
-  font-size: 13px;
-  margin-bottom: var(--spacing-lg);
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: var(--spacing-md);
+  flex-grow: 1;
 }
 
-/* Play Button */
-.play-button {
+.game-card-actions {
+  display: flex;
+  gap: 10px;
   width: 100%;
+  margin-top: auto;
+}
+
+.play-button, .tutorial-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background: var(--accent-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
+  gap: 6px;
   font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.play-button {
+  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+  box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);
 }
 
 .play-button:hover {
-  background: var(--accent-hover);
-  transform: scale(1.02);
-  box-shadow: 0 8px 24px var(--accent-glow);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(58, 123, 213, 0.6);
+  background: linear-gradient(135deg, #1de6ff 0%, #4f8eef 100%);
+  color: white;
+}
+
+.play-button:active {
+  transform: translateY(1px);
+}
+
+.tutorial-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+.tutorial-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
+  background: linear-gradient(135deg, #fcaaff 0%, #ff7387 100%);
+  color: white;
+}
+
+.tutorial-btn:active {
+  transform: translateY(1px);
 }
 
 .play-icon {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 /* Modals */
@@ -1231,6 +1277,85 @@ canvas {
 }
 
 /* Animations */
+@keyframes tutSimonGlow2 { 0%, 25%, 100% { opacity: 0.5; box-shadow: none; } 15%, 20% { opacity: 1; background: #ff0000; box-shadow: 0 0 20px #ff0000 inset; z-index: 10; } }
+@keyframes tutSimonGlow3 { 0%, 40%, 100% { opacity: 0.5; box-shadow: none; } 30%, 35% { opacity: 1; background: #0000ff; box-shadow: 0 0 20px #0000ff inset; z-index: 10; } }
+
+/* Elementy Visual Polish do gier */
+.wordle-tile.pop { animation: pop 0.1s; }
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.wordle-row.shake { animation: shakeRow 0.5s; }
+@keyframes shakeRow {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.simon-btn.active {
+  box-shadow: 0 0 40px currentColor, inset 0 0 20px rgba(255,255,255,0.8);
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* ===== DUCK HUNT HUD ===== */
+.duck-hud {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.4);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.duck-hud-level {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFD700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.duck-hud-score {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 28px;
+  font-weight: 800;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.duck-target-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+}
+
+.duck-hud-progress-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.duck-hud-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d95f, #00ff7f);
+  width: 0%;
+  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 10px rgba(0, 217, 95, 0.5);
+}
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-10px); }
@@ -1624,3 +1749,112 @@ body.light-theme .stat-item {
 .modal-body::-webkit-scrollbar-thumb:hover {
   background: var(--accent-primary);
 }
+
+/* ===== TUTORIAL ANIMATIONS ===== */
+.tutorial-animation-container {
+  width: 100%;
+  height: 150px;
+  background: #111;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Snake */
+.tut-snake-scene { width: 100%; height: 100%; position: relative; }
+.tut-snake-head { width: 20px; height: 20px; background: #00ff00; border-radius: 5px; position: absolute; left: 50px; top: 65px; animation: snakeMove 4s infinite linear; z-index: 2; }
+.tut-snake-eye { width: 4px; height: 4px; background: #000; position: absolute; top: 4px; border-radius: 50%; }
+.tut-snake-eye:nth-child(1) { left: 12px; }
+.tut-snake-eye:nth-child(2) { left: 12px; top: 12px; }
+.tut-snake-body { width: 18px; height: 18px; background: #00cc00; border-radius: 4px; position: absolute; top: 66px; }
+.tut-snake-body.b1 { left: 30px; animation: snakeMove1 4s infinite linear; }
+.tut-snake-body.b2 { left: 10px; animation: snakeMove2 4s infinite linear; }
+.tut-snake-apple { width: 16px; height: 16px; background: #ff0000; border-radius: 50%; position: absolute; right: 50px; top: 67px; animation: appleBlink 4s infinite; }
+@keyframes snakeMove { 0% { left: 50px; } 45% { left: 250px; opacity: 1; } 50% { left: 250px; opacity: 0; } 51% { left: -50px; opacity: 0; } 55% { left: -50px; opacity: 1; } 100% { left: 50px; } }
+@keyframes snakeMove1 { 0% { left: 30px; } 45% { left: 230px; opacity: 1; } 50% { left: 230px; opacity: 0; } 51% { left: -70px; opacity: 0; } 55% { left: -70px; opacity: 1; } 100% { left: 30px; } }
+@keyframes snakeMove2 { 0% { left: 10px; } 45% { left: 210px; opacity: 1; } 50% { left: 210px; opacity: 0; } 51% { left: -90px; opacity: 0; } 55% { left: -90px; opacity: 1; } 100% { left: 10px; } }
+@keyframes appleBlink { 0%, 35% { transform: scale(1); opacity: 1; } 45% { transform: scale(1.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
+
+/* Pong */
+.tut-pong-scene { width: 100%; height: 100%; position: relative; background: #000; }
+.tut-pong-paddle { width: 10px; height: 40px; background: #fff; position: absolute; top: 55px; }
+.tut-pong-paddle.left { left: 20px; animation: paddleLeft 2s infinite alternate ease-in-out; }
+.tut-pong-paddle.right { right: 20px; animation: paddleRight 2s infinite alternate ease-in-out; animation-delay: 0.5s; }
+.tut-pong-ball { width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; top: 69px; left: 35px; animation: ballBounce 2s infinite alternate linear; }
+.tut-pong-net { width: 4px; height: 100%; background: repeating-linear-gradient(to bottom, #fff 0, #fff 10px, transparent 10px, transparent 20px); position: absolute; left: 50%; transform: translateX(-50%); opacity: 0.5; }
+@keyframes paddleLeft { 0% { top: 20px; } 100% { top: 90px; } }
+@keyframes paddleRight { 0% { top: 90px; } 100% { top: 20px; } }
+@keyframes ballBounce { 0% { left: 34px; top: 69px; } 50% { left: 150px; top: 20px; } 100% { left: calc(100% - 46px); top: 69px; } }
+
+/* Wordle */
+.tut-wordle-scene { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #121213; }
+.tut-wordle-row { display: flex; gap: 5px; }
+.tut-wordle-tile { width: 40px; height: 40px; border: 2px solid #3a3a3c; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; animation: tileFlip 3s infinite; transform-style: preserve-3d; }
+.tut-wordle-tile.absent { animation-delay: 0.1s; background: #3a3a3c; }
+.tut-wordle-tile.present { animation-delay: 0.3s; background: #b59f3b; border-color: #b59f3b; }
+.tut-wordle-tile.correct { animation-delay: 0.5s; background: #538d4e; border-color: #538d4e; }
+@keyframes tileFlip { 0%, 20% { transform: rotateX(0deg); } 30%, 100% { transform: rotateX(360deg); } }
+
+/* Duck Hunt */
+.tut-duck-scene { width: 100%; height: 100%; position: relative; background: linear-gradient(#87CEEB, #E0F6FF); overflow: hidden; }
+.tut-duck-bird { width: 24px; height: 18px; background: #FFD700; border-radius: 50%; position: absolute; left: 50px; top: 60px; animation: duckFly 2s infinite ease-in-out; z-index: 3; }
+.tut-duck-bird::before { content: ''; position: absolute; right: -6px; top: 4px; width: 8px; height: 6px; background: #FF8C00; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.tut-duck-pipe { width: 30px; background: #00ff00; position: absolute; border: 2px solid #008800; animation: pipeScroll 3s infinite linear; right: -40px; }
+.tut-duck-pipe.top { top: 0; height: 40px; }
+.tut-duck-pipe.bottom { bottom: 0; height: 50px; }
+@keyframes duckFly { 0%, 100% { top: 60px; transform: rotate(-10deg); } 50% { top: 80px; transform: rotate(10deg); } }
+@keyframes pipeScroll { 0% { right: -40px; } 100% { right: 100%; } }
+
+/* Mario */
+.tut-mario-scene { width: 100%; height: 100%; position: relative; background: #5c94fc; overflow: hidden; }
+.tut-mario-player { width: 20px; height: 30px; background: #ff0000; position: absolute; left: 40px; bottom: 20px; animation: marioJump 2.5s infinite; }
+.tut-mario-player::after { content: ''; position: absolute; top: 0; left: 4px; width: 12px; height: 12px; background: #ffcccc; border-radius: 50%; }
+.tut-mario-coin { width: 14px; height: 20px; background: #FFD700; border-radius: 50%; border: 2px solid #DAA520; position: absolute; left: 120px; bottom: 60px; animation: coinSpin 2.5s infinite; }
+.tut-mario-ground { height: 20px; background: #8B4513; position: absolute; bottom: 0; border-top: 4px solid #00ff00; width: 100px; }
+.tut-mario-ground.left { left: 0; }
+.tut-mario-ground.right { right: 0; width: 200px; }
+@keyframes marioJump { 0%, 20% { bottom: 20px; left: 40px; } 40% { bottom: 80px; left: 120px; } 60% { bottom: 20px; left: 200px; } 80%, 100% { bottom: 20px; left: 200px; opacity: 0; } }
+@keyframes coinSpin { 0%, 35% { transform: scaleX(1); opacity: 1; } 40% { transform: scaleX(0.1); opacity: 0; } 100% { opacity: 0; } }
+
+/* Racing */
+.tut-racing-scene { width: 100%; height: 100%; position: relative; background: #333; overflow: hidden; }
+.tut-racing-road { width: 100%; height: 100%; position: absolute; animation: roadScroll 0.5s infinite linear; background-image: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.2) 50%); background-size: 100% 40px; }
+.tut-racing-player { width: 30px; height: 50px; background: #0088ff; border-radius: 5px; position: absolute; bottom: 10px; left: 30%; animation: carDodge 3s infinite ease-in-out; }
+.tut-racing-enemy { width: 30px; height: 50px; background: #ff0000; border-radius: 5px; position: absolute; top: -60px; left: 30%; animation: enemyDrive 3s infinite linear; }
+@keyframes roadScroll { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } }
+@keyframes carDodge { 0%, 20% { left: 30%; } 40%, 80% { left: 60%; } 100% { left: 30%; } }
+@keyframes enemyDrive { 0% { top: -60px; } 100% { top: 200px; } }
+
+/* Tetris */
+.tut-tetris-scene { width: 100%; height: 100%; position: relative; background: #111; display: flex; justify-content: center; }
+.tut-tetris-board { width: 80px; height: 100%; border-left: 2px solid #333; border-right: 2px solid #333; position: relative; }
+.tut-tetris-piece { display: grid; grid-template-columns: repeat(2, 20px); position: absolute; top: 0; left: 20px; animation: pieceFall 3s infinite steps(6); }
+.tut-tetris-block { width: 18px; height: 18px; background: #00ffff; border: 1px solid rgba(255,255,255,0.5); }
+.tut-tetris-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background: repeating-linear-gradient(90deg, #ff00ff 0, #ff00ff 18px, transparent 18px, transparent 20px); opacity: 0.5; }
+@keyframes pieceFall { 0% { top: 0; } 80%, 100% { top: calc(100% - 80px); } }
+
+/* Breakout */
+.tut-breakout-scene { width: 100%; height: 100%; position: relative; background: #000; }
+.tut-breakout-bricks { display: flex; gap: 5px; justify-content: center; padding-top: 15px; }
+.tut-breakout-brick { width: 40px; height: 15px; background: #ff0055; border-radius: 3px; animation: brickBreak 3s infinite; }
+.tut-breakout-brick:nth-child(2) { background: #00ffcc; animation-delay: 0.5s; }
+.tut-breakout-brick:nth-child(3) { background: #ffcc00; animation-delay: 1s; }
+.tut-breakout-paddle { width: 60px; height: 10px; background: #fff; border-radius: 5px; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); animation: breakPaddle 3s infinite ease-in-out; }
+.tut-breakout-ball { width: 10px; height: 10px; background: #fff; border-radius: 50%; position: absolute; animation: breakBall 3s infinite linear; }
+@keyframes breakPaddle { 0%, 100% { left: 50%; } 25% { left: 30%; } 75% { left: 70%; } }
+@keyframes breakBall { 0% { left: 50%; bottom: 25px; } 25% { left: 30%; bottom: 120px; } 50% { left: 10%; bottom: 25px; } 75% { left: 70%; bottom: 120px; } 100% { left: 50%; bottom: 25px; } }
+@keyframes brickBreak { 0%, 20% { opacity: 1; transform: scale(1); } 25%, 90% { opacity: 0; transform: scale(0); } 100% { opacity: 1; transform: scale(1); } }
+
+/* Simon */
+.tut-simon-scene { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100px; height: 100px; margin: auto; padding-top: 20px; }
+.tut-simon-btn { width: 100%; height: 100%; border-radius: 10px; opacity: 0.5; }
+.tut-simon-btn.g { background: #00ff00; animation: simonFlash 4s infinite 0.5s; }
+.tut-simon-btn.r { background: #ff0000; animation: simonFlash 4s infinite 1.5s; }
+.tut-simon-btn.y { background: #ffff00; animation: simonFlash 4s infinite 2.5s; }
+.tut-simon-btn.b { background: #0000ff; animation: simonFlash 4s infinite 3.5s; }
+@keyframes simonFlash { 0%, 100% { opacity: 0.5; box-shadow: none; transform: scale(1); } 10%, 20% { opacity: 1; box-shadow: 0 0 20px currentColor; transform: scale(1.05); } }

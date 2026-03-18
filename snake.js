@@ -9,13 +9,14 @@ function initSnake() {
   
   snakeGame = {
     snake: [{x: 200, y: 200}],
-    dx: 20, dy: 0,
+    dx: 5, dy: 0,
     food: {x: 0, y: 0},
     score: 0,
     gameOver: false,
-    speed: difficulty.speed,
+    speed: Math.max(20, difficulty.speed / 4), // 4x szybsze odświeżanie
     multiplier: difficulty.multiplier,
-    direction: 'right'
+    direction: 'right',
+    stepCounter: 0 // Do sprawdzania skrętu tylko co pełen 'blok' 20px
   };
   
   generateFood();
@@ -36,6 +37,26 @@ function generateFood() {
 }
 
 function updateSnake() {
+  snakeGame.stepCounter += 5;
+  
+  // Pozwól na skręt tylko na "siatce" 20px wokół środka bloku, by nie łamać kratek w pół
+  if (snakeGame.stepCounter >= 20) {
+     snakeGame.stepCounter = 0;
+     
+     if (inputHandler.isPressed('left')) {
+       if (snakeGame.direction !== 'right') { snakeGame.dx = -5; snakeGame.dy = 0; snakeGame.direction = 'left'; }
+     }
+     else if (inputHandler.isPressed('right')) {
+       if (snakeGame.direction !== 'left') { snakeGame.dx = 5; snakeGame.dy = 0; snakeGame.direction = 'right'; }
+     }
+     else if (inputHandler.isPressed('up')) {
+       if (snakeGame.direction !== 'down') { snakeGame.dx = 0; snakeGame.dy = -5; snakeGame.direction = 'up'; }
+     }
+     else if (inputHandler.isPressed('down')) {
+       if (snakeGame.direction !== 'up') { snakeGame.dx = 0; snakeGame.dy = 5; snakeGame.direction = 'down'; }
+     }
+  }
+  
   const head = {
     x: snakeGame.snake[0].x + snakeGame.dx,
     y: snakeGame.snake[0].y + snakeGame.dy
@@ -46,7 +67,7 @@ function updateSnake() {
   if (head.y < 0) head.y = 380;
   if (head.y >= 400) head.y = 0;
   
-  if (snakeGame.snake.some(s => s.x === head.x && s.y === head.y)) {
+  if (snakeGame.snake.some((s, idx) => idx > 3 && Math.abs(s.x - head.x) < 5 && Math.abs(s.y - head.y) < 5)) { 
     snakeGame.gameOver = true;
     achievementsManager.checkAchievements('snake', snakeGame.score);
     levelSystem.addXP(Math.floor(snakeGame.score / 2));
@@ -57,12 +78,20 @@ function updateSnake() {
   
   snakeGame.snake.unshift(head);
   
-  if (head.x === snakeGame.food.x && head.y === snakeGame.food.y) {
+  // Sprawdzanie kolizji z jedzeniem (z tolerancją wielkości)
+  if (Math.abs(head.x - snakeGame.food.x) < 15 && Math.abs(head.y - snakeGame.food.y) < 15) {
     snakeGame.score += Math.floor(10 * snakeGame.multiplier);
+    // Efekt zjedzenia - dodajemy tymczasowo większy promień do ciała
+    snakeGame.snake[0].justAte = true;
+    setTimeout(() => { if (snakeGame && snakeGame.snake[0]) snakeGame.snake[0].justAte = false; }, 200);
+    
     const scoreEl = document.getElementById('snakeScore');
-    if (scoreEl) scoreEl.textContent = `Wynik: ${snakeGame.score}`;
-    soundSystem.play('collect');
     generateFood();
+    // Żeby wąż nie oderwał się nagle od ciała, dodajemy 'wypełniacze' przy płynnym ruchu
+    for(let k=0; k<3; k++) {
+       const tail = snakeGame.snake[snakeGame.snake.length - 1];
+       snakeGame.snake.push({x: tail.x, y: tail.y});
+    }
   } else {
     snakeGame.snake.pop();
   }
@@ -100,15 +129,36 @@ function drawSnake() {
   // Wąż
   snakeGame.snake.forEach((segment, i) => {
     if (i === 0) {
+      // Głowa - większa kropka
       ctx.fillStyle = '#00ff00';
       ctx.beginPath();
-      ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+      ctx.arc(segment.x + 10, segment.y + 10, 11, 0, Math.PI * 2);
       ctx.fill();
+      
+      // Oczy
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      
+      // Rotacja oczu w zależności od kierunku
+      let eyeOffsets = [];
+      if (snakeGame.direction === 'right') eyeOffsets = [[6, -4], [6, 4]];
+      else if (snakeGame.direction === 'left') eyeOffsets = [[-6, -4], [-6, 4]];
+      else if (snakeGame.direction === 'up') eyeOffsets = [[-4, -6], [4, -6]];
+      else if (snakeGame.direction === 'down') eyeOffsets = [[-4, 6], [4, 6]];
+      else eyeOffsets = [[6, -4], [6, 4]]; // Zabezpieczenie
+      
+      eyeOffsets.forEach(offset => {
+        ctx.arc(segment.x + 10 + offset[0], segment.y + 10 + offset[1], 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+      });
+      
     } else {
-      const greenValue = Math.max(100, 200 - i * 10);
+      // Ciało z gradientem koloru
+      const greenValue = Math.max(80, 200 - i * 5);
       ctx.fillStyle = `rgb(0, ${greenValue}, 0)`;
       ctx.beginPath();
-      ctx.arc(segment.x + 10, segment.y + 10, 9, 0, Math.PI * 2);
+      ctx.arc(segment.x + 10, segment.y + 10, 9 - (i % 2 === 0 ? 0.5 : 0), 0, Math.PI * 2);
       ctx.fill();
     }
   });

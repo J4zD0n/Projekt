@@ -167,6 +167,10 @@ const wordleGame = {
       if (tile) {
         tile.textContent = letter;
         tile.classList.add('filled');
+        // Animacja dodania literki
+        tile.classList.remove('pop');
+        void tile.offsetWidth; // trigger reflow
+        tile.classList.add('pop');
       }
       this.gameBoard[this.currentRow][this.currentTile] = letter;
       this.currentTile++;
@@ -188,6 +192,12 @@ const wordleGame = {
   submitGuess() {
     if (this.currentTile !== this.currentWordLength) {
       showNotification(`Wpisz ${this.currentWordLength} liter!`);
+      const row = document.getElementById(`wordleBoard`).children[this.currentRow];
+      if (row) {
+        row.classList.remove('shake');
+        void row.offsetWidth; // triger reflow
+        row.classList.add('shake');
+      }
       return;
     }
     

@@ -10,7 +10,8 @@ function initBreakout() {
     lives: 3,
     level: 1,
     gameOver: false,
-    bricksDestroyed: 0
+    bricksDestroyed: 0,
+    particles: []
   };
   
   createBricks();
@@ -84,9 +85,12 @@ function updateBreakout() {
         breakoutGame.ball.x < breakoutGame.paddle.x + breakoutGame.paddle.width &&
         breakoutGame.ball.dy > 0) {
       
-      const hitPos = (breakoutGame.ball.x - breakoutGame.paddle.x) / breakoutGame.paddle.width;
-      breakoutGame.ball.dx = (hitPos - 0.5) * 10;
+      const hitPos = (breakoutGame.ball.x - (breakoutGame.paddle.x + breakoutGame.paddle.width/2)) / (breakoutGame.paddle.width/2);
+      breakoutGame.ball.dx = hitPos * 8; // Kąt zależy od odległości od środka (max 8)
       breakoutGame.ball.dy = -Math.abs(breakoutGame.ball.dy);
+      // Minimalna wysokość podbicia, żeby piłka nie latała poziomo
+      if (Math.abs(breakoutGame.ball.dy) < 3) breakoutGame.ball.dy = -3;
+      
       soundSystem.play('jump');
     }
     
@@ -101,6 +105,19 @@ function updateBreakout() {
         breakoutGame.ball.dy = -breakoutGame.ball.dy;
         breakoutGame.score += brick.points;
         breakoutGame.bricksDestroyed++;
+        
+        // Cząsteczki rozbicia (Shatter particles)
+        for(let i=0; i<8; i++) {
+           breakoutGame.particles.push({
+              x: brick.x + brick.width / 2,
+              y: brick.y + brick.height / 2,
+              vx: (Math.random() - 0.5) * 8,
+              vy: (Math.random() - 0.5) * 8,
+              life: 1.0,
+              color: brick.color,
+              size: Math.random() * 4 + 2
+           });
+        }
         
         dailyChallengeSystem.updateProgress('breakout', breakoutGame.bricksDestroyed);
         levelSystem.addXP(5);
@@ -136,6 +153,19 @@ function updateBreakout() {
     }
   }
   
+  // Aktualizacja partykuł
+  for (let i = breakoutGame.particles.length - 1; i >= 0; i--) {
+     let p = breakoutGame.particles[i];
+     p.x += p.vx;
+     p.y += p.vy;
+     p.vy += 0.2; // Grawitacja
+     p.life -= 0.05;
+     
+     if (p.life <= 0) {
+        breakoutGame.particles.splice(i, 1);
+     }
+  }
+  
   updateBreakoutScore();
 }
 
@@ -165,6 +195,14 @@ function drawBreakout() {
       ctx.strokeRect(brick.x, brick.y, brick.width, brick.height);
     }
   });
+  
+  // Cząsteczki rozbicia
+  breakoutGame.particles.forEach(p => {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+  });
+  ctx.globalAlpha = 1.0;
   
   const paddleGradient = ctx.createLinearGradient(
     breakoutGame.paddle.x, 0, 

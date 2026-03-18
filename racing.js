@@ -76,7 +76,8 @@ function initRacing() {
     scoreMultiplier: difficulty.multiplier,
     difficulty: difficulty,
     lastObstacleY: -200,  // Zapewnia odstęp między przeszkodami
-    score: 0
+    score: 0,
+    particles: []
   };
   
   gameStateManager.currentGameLoop = setInterval(() => {
@@ -139,6 +140,28 @@ function updateRacing() {
     }
   }
   
+  // Aktualizacja cząsteczek spalin
+  if (racingGame.frameCount % 3 === 0) {
+    racingGame.particles.push({
+      x: racingGame.car.x + racingGame.car.width / 2 + (Math.random() - 0.5) * 10,
+      y: racingGame.car.y + racingGame.car.height,
+      vx: (Math.random() - 0.5) * 2,
+      vy: Math.random() * 2 + 1,
+      life: 1.0,
+      size: Math.random() * 3 + 2
+    });
+  }
+  
+  for (let i = racingGame.particles.length - 1; i >= 0; i--) {
+     let p = racingGame.particles[i];
+     p.x += p.vx;
+     p.y += p.vy + racingGame.currentSpeed;
+     p.life -= 0.05;
+     if (p.life <= 0) {
+       racingGame.particles.splice(i, 1);
+     }
+  }
+  
   // Aktualizacja przeszkód i kolizje
   for (let i = racingGame.obstacles.length - 1; i >= 0; i--) {
     const obs = racingGame.obstacles[i];
@@ -196,6 +219,14 @@ function drawRacing() {
   ctx.fillStyle = '#333';
   ctx.fillRect(50, 0, 300, 500);
   
+  // Efekt Speed Illusion (rozmyte linie obok)
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  for (let i = 0; i < 5; i++) {
+     let y = (racingGame.roadY * 3 + i * 100) % 500;
+     ctx.fillRect(60, y, 5, 40);
+     ctx.fillRect(335, y, 5, 40);
+  }
+  
   // Linie na drodze
   ctx.strokeStyle = '#fff';
   ctx.lineWidth = 3;
@@ -221,6 +252,16 @@ function drawRacing() {
   ctx.lineTo(350, 500);
   ctx.stroke();
   
+  // Spalinowe cząsteczki
+  racingGame.particles.forEach(p => {
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = '#aaaaaa';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1.0;
+
   // Gracz (niebieskie auto) - LEPIEJ WIDOCZNE
   ctx.fillStyle = '#0000ff';
   ctx.fillRect(racingGame.car.x, racingGame.car.y, racingGame.car.width, racingGame.car.height);

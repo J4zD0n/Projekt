@@ -1,40 +1,28 @@
-// ===== DUCK LEVELS =====
 const duckLevels = [
-  {
-    id: 1,
-    name: "Pierwszy Lot",
-    gravity: 0.3,
-    jump: -6,
-    pipeSpeed: 1.5,
-    pipeGap: 180,
-    requiredScore: 5,
-    pipesColor: '#00ff00',
-    background: ['#87CEEB', '#E0F6FF'],
-    unlockMessage: "Pierwszy poziom ukończony!"
+  { 
+    name: 'Spokojny Staw', requiredScore: 5, pipeSpeed: 1.5, pipeGap: 180, 
+    gravity: 0.25, jump: -5.5, background: ['#87CEEB', '#E0F6FF'], 
+    unlockMessage: 'Dobre rozpoczęcie!' 
   },
-  {
-    id: 2,
-    name: "Wyższy Lot",
-    gravity: 0.35,
-    jump: -6.5,
-    pipeSpeed: 2,
-    pipeGap: 160,
-    requiredScore: 8,
-    pipesColor: '#00cc00',
-    background: ['#4682B4', '#E0F6FF'],
-    unlockMessage: "Skaczesz wyżej!"
+  { 
+    name: 'Wietrzna Łąka', requiredScore: 10, pipeSpeed: 2.0, pipeGap: 160, 
+    gravity: 0.3, jump: -6.0, background: ['#4A90E2', '#87CEEB'], 
+    unlockMessage: 'Coraz lepiej!' 
   },
-  {
-    id: 3,
-    name: "Niebezpieczny Przelot",
-    gravity: 0.4,
-    jump: -7,
-    pipeSpeed: 2.5,
-    pipeGap: 140,
-    requiredScore: 12,
-    pipesColor: '#009900',
-    background: ['#2F4F4F', '#87CEEB'],
-    unlockMessage: "Pokonałeś trudne przeszkody!"
+  { 
+    name: 'Mroczny Las', requiredScore: 15, pipeSpeed: 2.5, pipeGap: 150, 
+    gravity: 0.35, jump: -6.5, background: ['#2C3E50', '#4CA1AF'], 
+    unlockMessage: 'Jesteś ekspertem!' 
+  },
+  { 
+    name: 'Burzowe Niebo', requiredScore: 20, pipeSpeed: 3.0, pipeGap: 140, 
+    gravity: 0.4, jump: -7.0, background: ['#141E30', '#243B55'], 
+    unlockMessage: 'Niesamowity refleks!' 
+  },
+  { 
+    name: 'Kosmiczny Lot', requiredScore: 25, pipeSpeed: 3.5, pipeGap: 130, 
+    gravity: 0.45, jump: -7.5, background: ['#000000', '#434343'], 
+    unlockMessage: 'Mistrz Świata!' 
   }
 ];
 
@@ -74,7 +62,8 @@ function initDuck() {
     currentLevel: currentLevel,
     levelConfig: level,
     requiredScore: level.requiredScore,
-    unlockedLevels: unlockedLevels
+    unlockedLevels: unlockedLevels,
+    isStarting: true
   };
   
   gameStateManager.currentGame = 'duck';
@@ -86,20 +75,42 @@ function initDuck() {
     }
   }, 1000 / 60);
   
-  // Aktualizuj wynik
-  const scoreEl = document.getElementById('duckScore');
-  if (scoreEl) {
-    scoreEl.textContent = `Poziom ${currentLevel}: ${level.name} | Wynik: 0/${level.requiredScore}`;
-  }
+  // Aktualizuj nowoczesny HUD
+  updateDuckHUD();
   
   // Dodaj przyciski
   setTimeout(addDuckLevelButton, 100);
+}
+
+function updateDuckHUD() {
+  const levelEl = document.getElementById('duckHudLevel');
+  const scoreEl = document.getElementById('duckHudScore');
+  const progressEl = document.getElementById('duckHudProgress');
+  
+  if (levelEl && duckGame) {
+    levelEl.textContent = `POZIOM ${duckGame.currentLevel}: ${duckGame.levelConfig.name}`;
+  }
+  if (scoreEl && duckGame) {
+    scoreEl.textContent = `${duckGame.score}/${duckGame.requiredScore}`;
+  }
+  if (progressEl && duckGame) {
+    const progress = Math.min(duckGame.score / duckGame.requiredScore, 1) * 100;
+    progressEl.style.width = `${progress}%`;
+  }
 }
 
 function updateDuck() {
   if (!duckGame || duckGame.gameOver || duckGame.levelComplete) return;
   
   duckGame.frameCount++;
+  
+  if (duckGame.frameCount <= 120) {
+    duckGame.isStarting = true;
+    updateDuckHUD();
+    return;
+  } else {
+    duckGame.isStarting = false;
+  }
   
   duckGame.duck.velocity += duckGame.gravity;
   duckGame.duck.y += duckGame.duck.velocity;
@@ -109,6 +120,10 @@ function updateDuck() {
   }
   
   if (duckGame.duck.y + duckGame.duck.radius > 400 || duckGame.duck.y - duckGame.duck.radius < 0) {
+    if (!duckGame.gameOver) {
+       createFeathers(duckGame.duck.x || 100, duckGame.duck.y);
+       duckGame.duck.velocity = -5; // lekko odbij przy upadku
+    }
     duckGame.gameOver = true;
     achievementsManager.checkAchievements('duck', duckGame.score);
     levelSystem.addXP(duckGame.score * 5);
@@ -150,6 +165,10 @@ function updateDuck() {
       (duckGame.duck.y - duckGame.duck.radius < pipe.y ||
        duckGame.duck.y + duckGame.duck.radius > pipe.y + duckGame.pipeGap)
     ) {
+      if (!duckGame.gameOver) {
+         createFeathers(100, duckGame.duck.y);
+         duckGame.duck.velocity = -4; // odbicie do tyłu wizualne
+      }
       duckGame.gameOver = true;
       achievementsManager.checkAchievements('duck', duckGame.score);
       levelSystem.addXP(duckGame.score * 5);
@@ -159,10 +178,22 @@ function updateDuck() {
     }
   }
   
-  // Aktualizuj wynik
-  const scoreEl = document.getElementById('duckScore');
-  if (scoreEl) {
-    scoreEl.textContent = `Poziom ${duckGame.currentLevel}: ${duckGame.levelConfig.name} | Wynik: ${duckGame.score}/${duckGame.requiredScore}`;
+  // Aktualizuj nowy HUD
+  updateDuckHUD();
+}
+
+function createFeathers(x, y) {
+  // Simple particle system simulation on canvas
+  duckGame.particles = duckGame.particles || [];
+  for (let i = 0; i < 15; i++) {
+    duckGame.particles.push({
+      x: x,
+      y: y,
+      vx: (Math.random() - 0.5) * 10,
+      vy: (Math.random() - 0.5) * 10,
+      life: 1.0,
+      color: Math.random() > 0.5 ? '#FFD700' : '#FFF'
+    });
   }
 }
 
@@ -202,12 +233,13 @@ function drawDuck() {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 400, 400);
   
-  // Rury (identycznie jak w oryginale)
+  // Rury
   duckGame.pipes.forEach(pipe => {
-    ctx.fillStyle = duckGame.levelConfig.pipesColor;
+    ctx.fillStyle = duckGame.levelConfig.pipesColor || '#00ff00';
     ctx.fillRect(pipe.x, 0, 50, pipe.y);
     ctx.fillRect(pipe.x, pipe.y + duckGame.pipeGap, 50, 400 - pipe.y - duckGame.pipeGap);
     
+    // Krawędzie rur
     ctx.fillStyle = '#008800';
     ctx.fillRect(pipe.x - 5, pipe.y - 20, 60, 20);
     ctx.fillRect(pipe.x - 5, pipe.y + duckGame.pipeGap, 60, 20);
@@ -242,21 +274,32 @@ function drawDuck() {
   ctx.arc(dx + 15, dy - 7, 2, 0, Math.PI * 2);
   ctx.fill();
   
-  // Skrzydło
+  // Skrzydło (animowane zależnie od prędkości)
   ctx.fillStyle = '#DAA520';
   ctx.beginPath();
-  ctx.ellipse(dx - 3, dy + 3, 8, 5, -0.3, 0, Math.PI * 2);
+  let wingAngle = duckGame.duck.velocity < 0 ? 0.5 : -0.3; // Macha w dół gdy leci w górę
+  ctx.ellipse(dx - 3, dy + 3, 8, 5, wingAngle, 0, Math.PI * 2);
   ctx.fill();
   
-  // Pasek postępu
-  const progress = Math.min(duckGame.score / duckGame.requiredScore, 1);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-  ctx.fillRect(10, 10, 380, 20);
-  ctx.fillStyle = '#00ff00';
-  ctx.fillRect(12, 12, 376 * progress, 16);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 12px Arial';
-  ctx.fillText(`CEL: ${duckGame.score}/${duckGame.requiredScore} rur`, 15, 25);
+  // Rysuj cząsteczki (pióra)
+  if (duckGame.particles) {
+    for (let i = duckGame.particles.length - 1; i >= 0; i--) {
+      let p = duckGame.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.5; // grawitacja dla piór
+      p.life -= 0.02;
+      
+      if (p.life <= 0) {
+        duckGame.particles.splice(i, 1);
+      } else {
+        ctx.fillStyle = `rgba(${p.color === '#FFF' ? '255,255,255' : '255,215,0'}, ${p.life})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
   
   // Game Over (identycznie jak w oryginale)
   if (duckGame.gameOver) {
@@ -271,6 +314,18 @@ function drawDuck() {
     ctx.font = '25px Arial';
     ctx.fillText(`Poziom ${duckGame.currentLevel}`, 200, 220);
     ctx.fillText(`Wynik: ${duckGame.score}`, 200, 260);
+  }
+  
+  // Start Delay Countdown
+  if (duckGame.isStarting) {
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0, 0, 400, 400);
+    
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 40px Arial';
+    ctx.textAlign = 'center';
+    let timeLeft = Math.ceil((120 - duckGame.frameCount) / 60);
+    ctx.fillText(timeLeft > 0 ? timeLeft : 'GO!', 200, 210);
   }
   
   // Level Complete screen
@@ -482,7 +537,7 @@ document.addEventListener('click', function(e) {
 
 // Obsługa skoku - kliknięcie na canvas
 document.addEventListener('click', function(e) {
-  if (gameStateManager.currentGame === 'duck' && duckGame && !duckGame.gameOver && !duckGame.levelComplete) {
+  if (gameStateManager.currentGame === 'duck' && duckGame && !duckGame.gameOver && !duckGame.levelComplete && !duckGame.isStarting) {
     const canvas = document.getElementById('duckCanvas');
     if (canvas && e.target === canvas) {
       duckGame.duck.velocity = duckGame.jump;

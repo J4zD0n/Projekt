@@ -751,6 +751,192 @@ const dailyChallengeSystem = {
   }
 };
 
+// ===== TUTORIAL SYSTEM =====
+const tutorialSystem = {
+  tutorials: {
+    snake: {
+      name: "Snake",
+      title: "Zbieraj i Rośnij!",
+      desc: "Zjadaj jedzenie, aby wydłużyć węża. Uważaj, aby nie uderzyć w ściany ani we własny ogon! Im dłuższy wąż, tym jesteś szybszy.",
+      controls: "Strzałki lub W, A, S, D",
+      animationHTML: `
+        <div class="tut-snake-scene">
+          <div class="tut-snake-head">
+            <div class="tut-snake-eye"></div>
+            <div class="tut-snake-eye"></div>
+          </div>
+          <div class="tut-snake-body b1"></div>
+          <div class="tut-snake-body b2"></div>
+          <div class="tut-snake-apple"></div>
+        </div>
+      `
+    },
+    pong: {
+      name: "Pong",
+      title: "Odbijaj Piłkę!",
+      desc: "Klasyczny ping-pong. Odbijaj piłkę paletką, aby nie stracić punktu. Przebij piłkę w stronę przeciwnika (AI), aby zdobyć punkt.",
+      controls: "Strzałki Góra/Dół lub W, S",
+      animationHTML: `
+        <div class="tut-pong-scene">
+          <div class="tut-pong-paddle left"></div>
+          <div class="tut-pong-ball"></div>
+          <div class="tut-pong-paddle right"></div>
+          <div class="tut-pong-net"></div>
+        </div>
+      `
+    },
+    wordle: {
+      name: "Wordle",
+      title: "Odgadnij Słowo!",
+      desc: "Znajdź ukryte słowo w 6 próbach.<br><strong style='color:var(--success)'>Zielony</strong>: Dobra litera, dobre miejsce.<br><strong style='color:var(--warning)'>Żółty</strong>: Dobra litera, złe miejsce.<br><strong style='color:#555'>Szary</strong>: Litery nie ma w słowie.",
+      controls: "Klawiatura fizyczna lub ekranowa",
+      animationHTML: `
+        <div class="tut-wordle-scene">
+          <div class="tut-wordle-row">
+            <div class="tut-wordle-tile absent">K</div>
+            <div class="tut-wordle-tile correct">O</div>
+            <div class="tut-wordle-tile present">D</div>
+            <div class="tut-wordle-tile correct">E</div>
+            <div class="tut-wordle-tile correct">R</div>
+          </div>
+        </div>
+      `
+    },
+    duck: {
+      name: "Duck Hunt",
+      title: "Manewruj między rurami!",
+      desc: "Lataj swoją kaczką między przeszkodami. Im dalej polecisz bez zderzenia, tym lepiej! Grawitacja ciągnie cię w dół, musisz klikać by wzbić się wyżej.",
+      controls: "Spacja lub kliknięcie myszką na ekranie",
+      animationHTML: `
+        <div class="tut-duck-scene">
+          <div class="tut-duck-bird"></div>
+          <div class="tut-duck-pipe top"></div>
+          <div class="tut-duck-pipe bottom"></div>
+        </div>
+      `
+    },
+    mario: {
+      name: "Mini Mario",
+      title: "Biegnij po Monety!",
+      desc: "Biegaj w lewo i prawo, przeskakuj przepaście i zbieraj monety. Dotrzyj do flagi na końcu każdego poziomu, by przejść dalej.",
+      controls: "A, D - Poruszanie | W lub Spacja - Skok",
+      animationHTML: `
+        <div class="tut-mario-scene">
+          <div class="tut-mario-player"></div>
+          <div class="tut-mario-coin"></div>
+          <div class="tut-mario-ground"></div>
+          <div class="tut-mario-gap"></div>
+          <div class="tut-mario-ground right"></div>
+        </div>
+      `
+    },
+    racing: {
+      name: "Speed Racer",
+      title: "Wciśnij Gaz do Dechy!",
+      desc: "Omijaj inne samochody na autostradzie. Zbieraj zielone przyspieszenia, by zwiększyć mnożnik punktów. Wraz z dystansem gra przyspiesza!",
+      controls: "Strzałki w lewo i w prawo lub A i D",
+      animationHTML: `
+        <div class="tut-racing-scene">
+          <div class="tut-racing-road"></div>
+          <div class="tut-racing-player"></div>
+          <div class="tut-racing-enemy"></div>
+        </div>
+      `
+    },
+    tetris: {
+      name: "Tetris",
+      title: "Układaj Linie!",
+      desc: "Obracaj i przesuwaj spadające klocki. Wypełnienie całej poziomej linii sprawia, że znika ona i daje punkty. Gra kończy się, gdy klocki dotkną samej góry.",
+      controls: "Strzałki (Ruch/Prędkość) | Spacja (Obrót)",
+      animationHTML: `
+        <div class="tut-tetris-scene">
+          <div class="tut-tetris-board">
+            <div class="tut-tetris-piece">
+              <div class="tut-tetris-block"></div>
+              <div class="tut-tetris-block" style="grid-column: 1 / span 2; width: 40px;"></div>
+            </div>
+            <div class="tut-tetris-bottom"></div>
+          </div>
+        </div>
+      `
+    },
+    breakout: {
+      name: "Breakout",
+      title: "Niszcz Bloczek po Bloczku!",
+      desc: "Użyj paletki, aby odbijać piłkę w górę. Celem jest zniszczenie wszystkich kolorowych cegiełek na ekranie bez upuszczenia piłki w przepaść.",
+      controls: "Myszka lub Strzałki Lewo/Prawo",
+      animationHTML: `
+        <div class="tut-breakout-scene">
+          <div class="tut-breakout-bricks">
+            <div class="tut-breakout-brick"></div>
+            <div class="tut-breakout-brick"></div>
+            <div class="tut-breakout-brick"></div>
+          </div>
+          <div class="tut-breakout-ball"></div>
+          <div class="tut-breakout-paddle"></div>
+        </div>
+      `
+    },
+    simon: {
+      name: "Simon Says",
+      title: "Kopiuj Sekwencję!",
+      desc: "Obserwój carefully jak gra podświetla kolory. Twoim zadaniem jest kliknąć te same kolory w dokładnie takiej samej kolejności. Każda runda dodaje jeden nowy kolor do sekwencji.",
+      controls: "Kliknięcia myszką w bloki kolorów",
+      animationHTML: `
+        <div class="tut-simon-scene">
+          <div class="tut-simon-btn g"></div>
+          <div class="tut-simon-btn r"></div>
+          <div class="tut-simon-btn y"></div>
+          <div class="tut-simon-btn b"></div>
+        </div>
+      `
+    }
+  },
+
+  gameToStart: null,
+
+  show(gameId) {
+    const tutData = this.tutorials[gameId];
+    if (!tutData) return;
+
+    this.gameToStart = gameId;
+
+    document.getElementById('tutorialGameName').textContent = tutData.name;
+    document.getElementById('tutorialTitle').textContent = tutData.title;
+    document.getElementById('tutorialDescription').innerHTML = tutData.desc;
+    document.getElementById('tutorialControlsText').textContent = tutData.controls;
+    document.getElementById('tutorialAnimationContainer').innerHTML = tutData.animationHTML;
+
+    const modal = document.getElementById('tutorialModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      soundSystem.play('click');
+    }
+  }
+};
+
+function showTutorial(gameId) {
+  tutorialSystem.show(gameId);
+}
+
+function closeTutorialAndPlay() {
+  closeModal('tutorialModal');
+  if (tutorialSystem.gameToStart) {
+    const game = tutorialSystem.gameToStart;
+    
+    // Custom start logic based on game
+    if (['snake', 'pong', 'racing'].includes(game)) {
+      selectDifficulty(game);
+    } else if (game === 'wordle') {
+      selectWordleMode();
+    } else {
+      uiStart(game);
+    }
+    
+    tutorialSystem.gameToStart = null;
+  }
+}
+
 // ===== PAUSE SYSTEM =====
 const pauseSystem = {
   isPaused: false,
@@ -1740,7 +1926,7 @@ document.addEventListener('keydown', (e) => {
     } else if (key === 'right' && prevDx === 0) {
       snakeGame.dx = 20; snakeGame.dy = 0; snakeGame.direction = 'right';
     }
-  } else if (gameStateManager.currentGame === 'duck' && duckGame && !duckGame.gameOver && !duckGame.levelComplete) {
+  } else if (gameStateManager.currentGame === 'duck' && duckGame && !duckGame.gameOver && !duckGame.levelComplete && !duckGame.isStarting) {
     if (key === 'space' && duckGame.canJump) {
       duckGame.duck.velocity = duckGame.jump;
       duckGame.canJump = false; // Zapobiegaj ciągłym skokom
@@ -1785,7 +1971,7 @@ document.addEventListener('keyup', (e) => {
 // Usuwamy obsługę kliknięcia na ekranie Game Over (bo nie ma już przycisków)
 document.addEventListener('click', (e) => {
   // Kaczka - kliknięcie na canvas skacze (tylko gdy gra trwa)
-  if (gameStateManager.currentGame === 'duck' && duckGame && !duckGame.gameOver) {
+  if (gameStateManager.currentGame === 'duck' && duckGame && !duckGame.gameOver && !duckGame.isStarting) {
     const canvas = document.getElementById('duckCanvas');
     if (canvas && e.target === canvas) {
       duckGame.duck.velocity = duckGame.jump;

@@ -109,10 +109,15 @@
               <span class="meta-score">★ <span id="snakeBest">0</span></span>
             </div>
             <p class="game-desc">Klasyczny wąż - zbieraj punkty i rośnij</p>
-            <button class="play-button" onclick="selectDifficulty('snake')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="selectDifficulty('snake')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('snake')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -131,10 +136,15 @@
               <span class="meta-score">★ <span id="pongBest">0</span></span>
             </div>
             <p class="game-desc">Legendarny ping-pong przeciwko AI</p>
-            <button class="play-button" onclick="selectDifficulty('pong')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="selectDifficulty('pong')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('pong')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -153,10 +163,15 @@
               <span class="meta-score">✓ <span id="wordleSolved">0</span></span>
             </div>
             <p class="game-desc">Odgadnij ukryte słowo w 6 próbach</p>
-            <button class="play-button" onclick="selectWordleMode()">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="selectWordleMode()">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('wordle')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -175,10 +190,15 @@
               <span class="meta-score">🎯 <span id="simonBest">0</span></span>
             </div>
             <p class="game-desc">Zapamiętaj i powtórz sekwencję</p>
-            <button class="play-button" onclick="uiStart('simon')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="uiStart('simon')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('simon')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -197,10 +217,15 @@
               <span class="meta-score">★ <span id="duckBest">0</span></span>
             </div>
             <p class="game-desc">Leć między rurami, nie spadnij!</p>
-            <button class="play-button" onclick="uiStart('duck')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="uiStart('duck')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('duck')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -219,10 +244,15 @@
               <span class="meta-score">Lvl <span id="marioBest">0</span></span>
             </div>
             <p class="game-desc">Skacz, zbieraj monety, osiągnij flagę</p>
-            <button class="play-button" onclick="uiStart('mario')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="uiStart('mario')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('mario')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -241,10 +271,15 @@
               <span class="meta-score">🏁 <span id="racingBest">0</span>m</span>
             </div>
             <p class="game-desc">Omijaj samochody, jedź jak najdłużej</p>
-            <button class="play-button" onclick="selectDifficulty('racing')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="selectDifficulty('racing')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('racing')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -262,11 +297,16 @@
               <span class="meta-badge">Klasyka</span>
               <span class="meta-score">★ <span id="tetrisBest">0</span></span>
             </div>
-            <p class="game-desc">Układaj klocki i czyść linie</p>
-            <button class="play-button" onclick="uiStart('tetris')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <p class="game-desc">Układaj spadające klocki w pełne linie</p>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="uiStart('tetris')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('tetris')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -284,11 +324,16 @@
               <span class="meta-badge">Arkada</span>
               <span class="meta-score">★ <span id="breakoutBest">0</span></span>
             </div>
-            <p class="game-desc">Rozbijaj cegły piłką i paletką</p>
-            <button class="play-button" onclick="uiStart('breakout')">
-              <span class="play-icon">▶</span>
-              <span>Graj</span>
-            </button>
+            <p class="game-desc">Rozbij wszystkie cegły używając piłki i paletki</p>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="uiStart('breakout')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('breakout')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -583,6 +628,7 @@
     <div class="game-score" id="snakeScore">Wynik: 0</div>
     <canvas id="snakeCanvas" width="400" height="400"></canvas>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('snake')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetSnake()">Restart</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
     </div>
@@ -598,6 +644,7 @@
     <div class="game-score" id="pongScore">Ty: 0 | AI: 0</div>
     <canvas id="pongCanvas" width="600" height="300"></canvas>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('pong')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetPong()">Restart</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
     </div>
@@ -618,6 +665,7 @@
       <div id="wordleMessage" class="wordle-message"></div>
     </div>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('wordle')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetWordle()">Nowe Słowo</button>
       <button class="action-btn secondary" onclick="selectWordleMode()">Zmień Tryb</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
@@ -638,6 +686,7 @@
       <div class="simon-btn simon-blue" data-color="3"></div>
     </div>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('simon')">❔ Poradnik</button>
       <button class="action-btn secondary" id="simonStart">Start</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
     </div>
@@ -649,12 +698,25 @@
       <h2>🦆 Duck Hunt</h2>
     </div>
     <div class="game-controls-info">Sterowanie: SPACJA lub KLIK = skok | ESC = Pauza</div>
-    <div class="game-score" id="duckScore">Poziom: 1 | Wynik: 0/5</div>
+    
+    <!-- Modern HUD for Duck Hunt -->
+    <div class="duck-hud">
+      <div class="duck-hud-level" id="duckHudLevel">Poziom 1</div>
+      <div class="duck-hud-score">
+        <div class="duck-target-icon">🎯</div>
+        <span id="duckHudScore">0/5</span>
+      </div>
+      <div class="duck-hud-progress-bg">
+        <div class="duck-hud-progress-fill" id="duckHudProgress"></div>
+      </div>
+    </div>
+
     <canvas id="duckCanvas" width="400" height="400"></canvas>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('duck')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetDuck()">🔄 Restart</button>
       <button class="action-btn secondary level-select" id="duckLevelSelectBtn">🎮 Wybierz Poziom</button>
-      <button class="action-btn primary back-to-menu" onclick="backToMenu()">⏪ POWRÓT DO MENU</button>
+      <button class="action-btn primary back-to-menu" onclick="backToMenu()">⏪ Menu</button>
     </div>
   </div>
 
@@ -667,9 +729,10 @@
     <div class="game-score" id="marioScore">Poziom: 1 | Monety: 0/3 | Wynik: 0 | Czas: 2:00</div>
     <canvas id="marioCanvas" width="600" height="400"></canvas>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('mario')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetMario()">🔄 Restart</button>
       <button class="action-btn secondary level-select" id="marioLevelSelectBtn">🎮 Wybierz Poziom</button>
-      <button class="action-btn primary back-to-menu" onclick="backToMenu()">⏪ POWRÓT DO MENU</button>
+      <button class="action-btn primary back-to-menu" onclick="backToMenu()">⏪ Menu</button>
     </div>
   </div>
 
@@ -683,6 +746,7 @@
     <div class="game-score" id="racingScore">Dystans: 0m | Wynik: 0 | Mnożnik: x1</div>
     <canvas id="racingCanvas" width="400" height="500"></canvas>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('racing')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetRacing()">Restart</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
     </div>
@@ -705,6 +769,7 @@
       </div>
     </div>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('tetris')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetTetris()">Restart</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
     </div>
@@ -719,6 +784,7 @@
     <div class="game-score" id="breakoutScore">Wynik: 0 | Życia: 3 | Poziom: 1</div>
     <canvas id="breakoutCanvas" width="600" height="500"></canvas>
     <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('breakout')">❔ Poradnik</button>
       <button class="action-btn secondary" onclick="resetBreakout()">Restart</button>
       <button class="action-btn primary" onclick="backToMenu()">Menu</button>
     </div>
@@ -732,6 +798,31 @@
       <p>Poziom <span id="newLevel">2</span></p>
       <div class="level-up-rewards">
         <span>🎁 Odblokowano nowe funkcje!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Modal -->
+  <div id="tutorialModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeModal('tutorialModal')"></div>
+    <div class="modal-box tutorial-box">
+      <div class="modal-header">
+        <h2>❔ Poradnik: <span id="tutorialGameName">Gra</span></h2>
+        <button class="modal-close" onclick="closeModal('tutorialModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="tutorialAnimationContainer" class="tutorial-animation-container">
+          <!-- Oparta na CSS animacja będzie wstrzykiwana tutaj przez JS -->
+        </div>
+        <div class="tutorial-text-content">
+          <h3 id="tutorialTitle">Zasady Gry</h3>
+          <p id="tutorialDescription">Opis gry pojawi się tutaj.</p>
+          <div class="tutorial-controls">
+            <h4>Sterowanie:</h4>
+            <p id="tutorialControlsText">W, A, S, D</p>
+          </div>
+        </div>
+        <button class="action-btn primary tutorial-play-btn" onclick="closeTutorialAndPlay()">Zrozumiałem, gramy!</button>
       </div>
     </div>
   </div>

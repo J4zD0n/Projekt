@@ -448,6 +448,20 @@ function updateMario(deltaTime) {
     mario.velocityY = mario.jumpPower;
     mario.onGround = false;
     mario.canJump = false;
+    
+    // Kurz przy skoku
+    if (!marioGame.particles) marioGame.particles = [];
+    for(let i = 0; i < 5; i++) {
+       marioGame.particles.push({
+         x: mario.x + mario.width / 2 + (Math.random() - 0.5) * 10,
+         y: mario.y + mario.height,
+         vx: (Math.random() - 0.5) * 2,
+         vy: Math.random() * -2,
+         life: 1.0,
+         color: '#cccccc'
+       });
+    }
+
     soundSystem.play('jump');
   }
   
@@ -620,7 +634,18 @@ function updateMario(deltaTime) {
         mario.velocityY = mario.jumpPower * 0.7;
         marioGame.score += enemy.type === 'koopa' ? 75 : 50;
         
-        // USUNIĘTO efekty cząsteczkowe przy zabijaniu wrogów
+        // Cząsteczki po pokonaniu wroga
+        if (!marioGame.particles) marioGame.particles = [];
+        for (let i = 0; i < 10; i++) {
+          marioGame.particles.push({
+            x: enemy.x + enemy.width / 2,
+            y: enemy.y + enemy.height / 2,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            life: 1.0,
+            color: enemy.type === 'koopa' ? '#00bb00' : '#8B4513'
+          });
+        }
         
         soundSystem.play('collect');
         updateMarioScore();
@@ -807,33 +832,25 @@ function drawMario() {
   });
   
   // Monety
+  const t = Date.now() / 200; // Do animacji monety (obrót w pseudo-3D)
   level.coins.forEach((coin, index) => {
-    if (marioGame.coinsCollected.includes(index)) return;
-    
-    const cx = coin.x - camera.x;
-    const cy = coin.y;
-    
-    if (cx + 20 < 0 || cx - 20 > 600) return;
-    
-    ctx.save();
-    ctx.translate(cx, cy);
-    
-    const pulse = 0.9 + Math.sin(Date.now() / 200) * 0.1;
-    
-    // Animacja obrotu monety
-    ctx.rotate(Date.now() / 500);
-    
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 10 * pulse, 7 * pulse, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.fillStyle = '#FFA500';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 6 * pulse, 4 * pulse, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
+    if (!marioGame.coinsCollected.includes(index)) {
+      const cx = coin.x - camera.x;
+      const cy = coin.y;
+      
+      if (cx + 15 < 0 || cx - 15 > 600) return;
+      
+      const scaleX = Math.abs(Math.cos(t + index)); // Efekt 3D spinningu
+      
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.ellipse(cx + 7.5, cy + 10, 7.5 * scaleX, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#DAA520';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
   });
   
   // Flaga

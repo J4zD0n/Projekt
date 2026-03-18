@@ -294,3 +294,18 @@
 - Sklep – funkcja `fixShopBug()` do naprawy stanu sklepu przy starcie
 - LocalStorage – spójny system zapisu/odczytu dla wszystkich gier
 - Czyszczenie zasobów – zatrzymywanie wszystkich interwałów i animacji przy przejściach
+
+
+
+## Wersja v0.80 - Etap 6: Implementacja projektu cz. 2
+Wersja v0.70 przynosi ogromne zmiany optymalizacyjne w strukturze kodu oraz znaczące ulepszenia dla końcowego użytkownika (UI/UX).
+
+### 🐛 Refaktoryzacja i Architektura (Backend/Skrypty)
+- **Modularyzacja kodu:** Gigantyczny plik [javascript.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v50/javascript.js:0:0-0:0) został podzielony tematycznie. Każda z 9 gier posiada teraz swój dedykowany, wyizolowany moduł (np. [snake.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v0.70/snake.js:0:0-0:0), [duck.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v0.70/duck.js:0:0-0:0), [mario.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v0.70/mario.js:0:0-0:0)), co drastycznie poprawia czytelność kodu, ułatwia jego rozwój i ładowanie.
+- **Skalowalność:** Nowa architektura w naturalny sposób przygotowuje grunt pod dodawanie kolejnych gier bez obciążania głównego wątku aplikacji.
+### 🎨 Zmiany w Interfejsie (UI/UX)
+- **Modern HUD (Heads-Up Display):** Zaimplementowano całkowicie nowy, kinowy HUD w trakcie rozgrywki (szczególnie widoczny w grze _Duck Hunt_). Postępy, celność i zdobyte punkty są teraz płynnie animowane nad elementem Canvas.
+- **Przyciski "Poradnik" (Tutorials):** Do każdej gry w bibliotece wprowadzono interaktywny przycisk pomocy ("Poradnik"), który przed uruchomieniem Canvasa tłumaczy nowym graczom zasady i sterowanie w danej grze.
+- **Zaawansowane arkusze stylów:** Plik [style.css](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v50/style.css:0:0-0:0) został zaktualizowany (jego rozmiar wzrósł o blisko 40%), wprowadzając nowe przejścia (transitions), palety kolorów i wsparcie dla nowych modali oraz podglądów poziomów trudności.
+### 📜 Licencja i Środowisko Produkcyjne
+Zgodnie z wymogami środowiska produkcyjnego dla projektów open-source, aplikacja docelowo operuje w oparciu o popularną, otwartą licencję **MIT**, w pełni pozwalając na jej komercyjne użycie, modyfikowanie kodu oraz swobodną dystrybucję w celach edukacyjnych.
