@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJOP Stage 7 - Dashboard Testowy</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0c;
+            --card-bg: #16161a;
+            --text-color: #e1e1e6;
+            --primary: #0070f3;
+            --success: #00d95f;
+            --error: #ff0033;
+            --warning: #ffb000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1e 0%, #0a0a0c 100%);
+            border-radius: 16px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 { margin: 0; font-size: 2.5rem; color: var(--primary); }
+        p { color: #888; margin-top: 10px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .stat-label { font-size: 0.9rem; color: #888; text-transform: uppercase; margin-top: 5px; }
+
+        .test-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid #222;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            padding: 15px 25px;
+            background: #1c1c21;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .results-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .test-item {
+            padding: 15px 25px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .test-item:hover { background: #1c1c21; }
+
+        .status-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-pass { background-color: var(--success); color: #000; }
+        .status-fail { background-color: var(--error); color: #fff; }
+
+        .test-info { flex-grow: 1; }
+        .test-name { font-weight: 500; display: block; }
+        .test-desc { font-size: 0.85rem; color: #888; }
+
+        .test-meta { font-family: monospace; font-size: 0.85rem; color: #555; }
+
+        .run-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .run-btn:hover { background: #0060d0; transform: translateY(-2px); }
+        .run-btn:active { transform: translateY(0); }
+
+        #test-sandbox {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Stage 7: Dashboard Testowy</h1>
+            <p>Projekt: 2ap PROJOP | Metoda: Testy Jednostkowe i Integracyjne</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Wszystkie testy</div>
+            </div>
+            <div class="stat-card" style="border-top: 3px solid var(--success);">
+                <div class="stat-value" id="passedTests" style="color: var(--success);">0</div>
+                <div class="stat-label">Zaliczone</div>
+            </div>
+            <div class="stat-card" style="border-top: 3px solid var(--error);">
+                <div class="stat-value" id="failedTests" style="color: var(--error);">0</div>
+                <div class="stat-label">Błędy</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="section-header">
+                <h2>Wyniki Testów Automatycznych</h2>
+                <button class="run-btn" onclick="runTests()">Uruchom ponownie</button>
+            </div>
+            <ul class="results-list" id="resultsList"></ul>
+        </div>
+
+        <footer style="text-align: center; color: #444; font-size: 0.8rem; margin-top: 40px;">
+            PROJOPP_AP_e7 | 2026-04-22 | System Testowy v1.1
+        </footer>
+    </div>
+
+    <div id="test-sandbox">
+        <canvas id="snakeCanvas" width="400" height="400"></canvas>
+        <canvas id="pongCanvas" width="600" height="300"></canvas>
+        <div id="snakeScore"></div>
+        <div id="pongScore"></div>
+        <div id="pongDifficulty"></div>
+        <div id="snakeDifficulty"></div>
+        <div id="topBarLevel"></div>
+        <div id="topBarXPFill"></div>
+        <div id="topBarXPText"></div>
+    </div>
+
+    <!-- MOOCKI ZAMIAST javascript.js (aby uniknąć błędów DOM i konfliktów const) -->
+    <script>
+        // Podstawowa konfiguracja potrzebna do działania pong.js i snake.js
+        window.gameStateManager = {
+            currentDifficulty: 'easy',
+            currentGameLoop: null,
+            resetGame: () => { clearInterval(window.gameStateManager.currentGameLoop); }
+        };
+
+        window.difficultyConfig = {
+            pong: {
+                easy: { name: 'Łatwy', ballSpeed: 4, playerSpeed: 5, aiSpeed: 3 }
+            },
+            snake: {
+                easy: { name: 'Łatwy', speed: 150 }
+            }
+        };
+
+        window.inputHandler = {
+            keys: {},
+            isPressed: (key) => window.inputHandler.keys[key] || false
+        };
+
+        window.soundSystem = { play: () => {}, toggle: () => {}, enabled: true };
+        window.achievementsManager = { checkAchievements: () => {}, progress: {} };
+        window.levelSystem = { xp: 0, addXP: (v) => { window.levelSystem.xp += v; }, save: () => {} };
+        window.dailyChallengeSystem = { updateProgress: () => {} };
+
+        // Blokada pętli gry, aby nie przeszkadzały w testach
+        const originalSetInterval = window.setInterval;
+        window.setInterval = (fn, delay) => {
+            if (delay < 50) return 999; 
+            return originalSetInterval(fn, delay);
+        };
+    </script>
+    
+    <!-- Ładujemy tylko skrypty gier, które chcemy testować -->
+    <script src="pong.js"></script>
+    <script src="snake.js"></script>
+    
+    <!-- Nasz skrypt testowy -->
+    <script src="testy.js"></script>
+</body>
+</html>

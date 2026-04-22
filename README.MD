@@ -309,3 +309,19 @@ Wersja v0.70 przynosi ogromne zmiany optymalizacyjne w strukturze kodu oraz znac
 - **Zaawansowane arkusze stylów:** Plik [style.css](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v50/style.css:0:0-0:0) został zaktualizowany (jego rozmiar wzrósł o blisko 40%), wprowadzając nowe przejścia (transitions), palety kolorów i wsparcie dla nowych modali oraz podglądów poziomów trudności.
 ### 📜 Licencja i Środowisko Produkcyjne
 Zgodnie z wymogami środowiska produkcyjnego dla projektów open-source, aplikacja docelowo operuje w oparciu o popularną, otwartą licencję **MIT**, w pełni pozwalając na jej komercyjne użycie, modyfikowanie kodu oraz swobodną dystrybucję w celach edukacyjnych.
+
+## Wersja v0.85 - Etap 7: Testowanie aplikacji
+Wersja v0.85 skupia się na zapewnieniu najwyższej jakości kodu poprzez wdrożenie kompleksowego systemu testowego oraz dokumentacji technicznej procesu weryfikacji.
+
+### 🧪 System Testów Automatycznych
+- **Dashboard Testowy:** Stworzono dedykowane narzędzie [testy.html](testy.html), które pozwala na błyskawiczne uruchomienie testów jednostkowych w przeglądarce.
+- **Testy Jednostkowe (Unit Tests):** Implementacja skryptu [testy.js](testy.js) weryfikującego krytyczne moduły gry (fizyka Pong, mechanika Snake, system XP).
+- **Izolacja Środowiska:** Zastosowano system "mockowania" globalnych obiektów gry, co pozwala na stabilne testowanie logiki bez konieczności ładowania całego interfejsu UI.
+
+### 📋 Dokumentacja i Metodyka
+- **Dokumentacja Testów:** Przygotowano szczegółowy raport [Dokumentacja_Testow.md](Dokumentacja_Testow.md) zawierający plan testów, wybrane metodyki oraz wyniki weryfikacji.
+- **Testy Funkcjonalne:** Przeprowadzono manualną weryfikację wszystkich ścieżek krytycznych użytkownika (User Flows).
+
+### 🛠️ Weryfikacja i Poprawki (Bugfixes)
+- **Anti-Tunnelling w Pong:** Na podstawie wyników testów usprawniono detekcję kolizji w [pong.js](pong.js). Dodano mechanizm "wypychania" piłki, co eliminuje błąd przenikania przez paletki przy bardzo dużych prędkościach.
+- **Stabilność Inputu:** Zoptymalizowano obsługę klawiatury, zapewniając płynniejsze przejścia między różnymi trybami gry.

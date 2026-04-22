@@ -42,21 +42,30 @@ function updatePong() {
     pongGame.ball.dy = -pongGame.ball.dy;
   }
   
-  if (pongGame.ball.x <= 25 && pongGame.ball.y >= pongGame.player.y && 
+  // Kolizja z paletką gracza (lewa strona)
+  if (pongGame.ball.dx < 0 && // Piłka leci w lewo
+      pongGame.ball.x <= 25 && pongGame.ball.x >= 10 && 
+      pongGame.ball.y >= pongGame.player.y && 
       pongGame.ball.y <= pongGame.player.y + 80) {
-    // Dynamiczny kąt zależy od miejsca uderzenia paczki (0.5 to środek)
+    
     let hitPoint = (pongGame.ball.y - pongGame.player.y) / 80;
     pongGame.ball.dy = (hitPoint - 0.5) * 10;
-    pongGame.ball.dx = Math.abs(pongGame.ball.dx) * 1.05; // przyspiesza!
+    pongGame.ball.dx = Math.abs(pongGame.ball.dx) * 1.05;
+    pongGame.ball.x = 26; // Odsuń piłkę od paletki
     pongGame.shakeAmount = 3;
     soundSystem.play('jump');
   }
   
-  if (pongGame.ball.x >= 575 && pongGame.ball.y >= pongGame.ai.y && 
+  // Kolizja z paletką AI (prawa strona)
+  if (pongGame.ball.dx > 0 && // Piłka leci w prawo
+      pongGame.ball.x >= 575 && pongGame.ball.x <= 590 && 
+      pongGame.ball.y >= pongGame.ai.y && 
       pongGame.ball.y <= pongGame.ai.y + 80) {
+    
     let hitPoint = (pongGame.ball.y - pongGame.ai.y) / 80;
     pongGame.ball.dy = (hitPoint - 0.5) * 10;
     pongGame.ball.dx = -Math.abs(pongGame.ball.dx) * 1.05;
+    pongGame.ball.x = 574; // Odsuń piłkę od paletki
     pongGame.shakeAmount = 3;
     soundSystem.play('jump');
   }
