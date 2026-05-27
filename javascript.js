@@ -1,10 +1,29 @@
+// ===== SAFE STORAGE MANAGER =====
+const storageManager = {
+  getItem(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
+      return null;
+    }
+  },
+  setItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
+    }
+  }
+};
+
 // ===== GLOBAL SETTINGS =====
 const settings = {
   sound: true,
   accentColor: '#0070f3',
   
   load() {
-    const saved = localStorage.getItem('gameSettings');
+    const saved = storageManager.getItem('gameSettings');
     if (saved) {
       Object.assign(this, JSON.parse(saved));
       this.apply();
@@ -12,7 +31,7 @@ const settings = {
   },
   
   save() {
-    localStorage.setItem('gameSettings', JSON.stringify(this));
+    storageManager.setItem('gameSettings', JSON.stringify(this));
   },
   
   apply() {
@@ -54,7 +73,7 @@ const soundSystem = {
       coin: this.createBeep(800, 0.1)
     };
     
-    const saved = localStorage.getItem('soundEnabled');
+    const saved = storageManager.getItem('soundEnabled');
     if (saved !== null) {
       this.enabled = saved === 'true';
     }
@@ -115,7 +134,7 @@ const soundSystem = {
   
   toggle() {
     this.enabled = !this.enabled;
-    localStorage.setItem('soundEnabled', this.enabled);
+    storageManager.setItem('soundEnabled', this.enabled);
     this.updateIcon();
     
     // Odtwórz dźwięk tylko jeśli włączamy
@@ -182,7 +201,7 @@ const levelRewardsSystem = {
   },
 
   init() {
-    const saved = localStorage.getItem('levelRewards');
+    const saved = storageManager.getItem('levelRewards');
     if (saved) {
       const data = JSON.parse(saved);
       this.coins = data.coins || 0;
@@ -493,7 +512,7 @@ const levelRewardsSystem = {
   },
 
   save() {
-    localStorage.setItem('levelRewards', JSON.stringify({
+    storageManager.setItem('levelRewards', JSON.stringify({
       coins: this.coins,
       currentAvatar: this.currentAvatar,
       currentFrame: this.currentFrame,
@@ -523,7 +542,7 @@ const levelSystem = {
   totalXP: 0,
   
   init() {
-    const saved = localStorage.getItem('playerLevel');
+    const saved = storageManager.getItem('playerLevel');
     if (saved) {
       const data = JSON.parse(saved);
       this.xp = data.xp || 0;
@@ -574,6 +593,7 @@ const levelSystem = {
     
     soundSystem.play('levelUp');
     this.showLevelUpNotification();
+    if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
   },
   
   showLevelUpNotification() {
@@ -621,7 +641,7 @@ const levelSystem = {
   },
   
   save() {
-    localStorage.setItem('playerLevel', JSON.stringify({
+    storageManager.setItem('playerLevel', JSON.stringify({
       xp: this.xp,
       level: this.level,
       totalXP: this.totalXP
@@ -654,11 +674,12 @@ const dailyChallengeSystem = {
     { id: 'mario_coins', game: 'mario', title: 'Kolekcjoner Monet', desc: 'Zbierz 10 monet w Mario', target: 10, reward: 170 },
     { id: 'racing_distance', game: 'racing', title: 'Szybki Kierowca', desc: 'Przejdź 200m w Racing', target: 200, reward: 200 },
     { id: 'tetris_lines', game: 'tetris', title: 'Mistrz Tetris', desc: 'Wyczyść 20 linii', target: 20, reward: 210 },
-    { id: 'breakout_bricks', game: 'breakout', title: 'Rozbijacz Cegieł', desc: 'Zniszcz 50 cegieł', target: 50, reward: 190 }
+    { id: 'breakout_bricks', game: 'breakout', title: 'Rozbijacz Cegieł', desc: 'Zniszcz 50 cegieł', target: 50, reward: 190 },
+    { id: 'invaders_score', game: 'invaders', title: 'Obrońca Ziemi', desc: 'Zdobądź 300 punktów w Space Invaders', target: 300, reward: 200 }
   ],
   
   init() {
-    const saved = localStorage.getItem('dailyChallenge');
+    const saved = storageManager.getItem('dailyChallenge');
     if (saved) {
       const data = JSON.parse(saved);
       this.streak = data.streak || 0;
@@ -742,7 +763,7 @@ const dailyChallengeSystem = {
   },
   
   save() {
-    localStorage.setItem('dailyChallenge', JSON.stringify({
+    storageManager.setItem('dailyChallenge', JSON.stringify({
       currentChallenge: this.currentChallenge,
       lastChallengeDate: this.lastChallengeDate,
       streak: this.streak,
@@ -877,6 +898,29 @@ const tutorialSystem = {
         </div>
       `
     },
+    invaders: {
+      name: "Space Invaders",
+      title: "Obroń Ziemię przed Inwazją!",
+      desc: "Kontrolujesz statek kosmiczny na dole ekranu. Strzelaj w nadciągających obcych, zanim dotrą do Ciebie!<br><br><strong style='color:#ff4444'>🔴 Boss (górny rząd)</strong> — 40 punktów, czerwony z rogami<br><strong style='color:#ffee00'>🟡 Medium (rząd 2-3)</strong> — 20 punktów, żółty ze skrzydłami<br><strong style='color:#00ee44'>🟢 Basic (reszta)</strong> — 10 punktów, zielony z antenami<br><br>💡 <em>Wskazówka: Celuj najpierw w bossów — dają najwięcej punktów! Unikaj czerwonych pocisków wroga.</em>",
+      controls: "A/D lub ←/→ = Ruch | SPACJA = Strzał",
+      animationHTML: `
+        <div style="width: 100%; height: 100%; background: linear-gradient(180deg, #050510, #0a0a2a); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px;">
+            <div style="width: 25px; height: 18px; background: linear-gradient(180deg, #ff2200, #aa0000); border-radius: 3px; box-shadow: 0 0 8px #ff3300; position: relative;">
+              <div style="position: absolute; top: -4px; left: 2px; width: 4px; height: 6px; background: #ff4444; border-radius: 2px 2px 0 0;"></div>
+              <div style="position: absolute; top: -4px; right: 2px; width: 4px; height: 6px; background: #ff4444; border-radius: 2px 2px 0 0;"></div>
+            </div>
+            <div style="width: 25px; height: 18px; background: linear-gradient(180deg, #ffee00, #ccaa00); border-radius: 3px; box-shadow: 0 0 6px #ffff00;"></div>
+            <div style="width: 20px; height: 18px; background: linear-gradient(180deg, #00ee44, #008822); border-radius: 50%; box-shadow: 0 0 5px #00ff00;"></div>
+          </div>
+          <div style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);">
+            <div style="width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 20px solid #0055dd; filter: drop-shadow(0 0 6px #00aaff);"></div>
+          </div>
+          <div style="position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); width: 2px; height: 12px; background: #00ffff; box-shadow: 0 0 8px #00ffff; animation: invaderShoot 0.8s infinite;"></div>
+        </div>
+        <style>@keyframes invaderShoot { 0%, 100% { opacity: 1; bottom: 35px; } 50% { opacity: 0.5; bottom: 80px; } }</style>
+      `
+    },
     simon: {
       name: "Simon Says",
       title: "Kopiuj Sekwencję!",
@@ -973,13 +1017,12 @@ const pauseSystem = {
     switch(game) {
       case 'snake':
         if (snakeGame && !snakeGame.gameOver) {
-          const difficulty = difficultyConfig.snake[gameStateManager.currentDifficulty];
           gameStateManager.currentGameLoop = setInterval(() => {
             if (!snakeGame.gameOver) {
               updateSnake();
               drawSnake();
             }
-          }, difficulty.speed);
+          }, snakeGame.speed);
         }
         break;
       case 'pong':
@@ -1052,6 +1095,16 @@ const pauseSystem = {
             if (!breakoutGame.gameOver) {
               updateBreakout();
               drawBreakout();
+            }
+          }, 1000 / 60);
+        }
+        break;
+      case 'invaders':
+        if (invadersGame && !invadersGame.gameOver) {
+          gameStateManager.currentGameLoop = setInterval(() => {
+            if (!invadersGame.gameOver) {
+              updateInvaders();
+              drawInvaders();
             }
           }, 1000 / 60);
         }
@@ -1143,6 +1196,12 @@ function resetBreakout() {
   initBreakout();
 }
 
+function resetInvaders() {
+  gameStateManager.cleanupCurrentGame();
+  inputHandler.clearAll();
+  initInvaders();
+}
+
 function resetPong() {
   gameStateManager.cleanupCurrentGame();
   inputHandler.clearAll();
@@ -1177,6 +1236,7 @@ function restartFromGameOver(game) {
       case 'racing': initRacing(); break;
       case 'tetris': initTetris(); break;
       case 'breakout': initBreakout(); break;
+      case 'invaders': initInvaders(); break;
     }
     gameStateManager.currentGame = game;
   }, 100);
@@ -1237,6 +1297,10 @@ function resetCurrentGame() {
       case 'breakout': 
         initBreakout(); 
         gameStateManager.currentGame = 'breakout';
+        break;
+      case 'invaders': 
+        initInvaders(); 
+        gameStateManager.currentGame = 'invaders';
         break;
     }
   }, 50);
@@ -1452,15 +1516,16 @@ const achievementsManager = {
     marioBest: 0,
     racingBest: 0,
     tetrisBest: 0,
-    breakoutBest: 0
+    breakoutBest: 0,
+    invadersBest: 0
   },
   
   init() {
-    const saved = localStorage.getItem('achievements');
+    const saved = storageManager.getItem('achievements');
     if (saved) {
       this.achievements = JSON.parse(saved);
     }
-    const savedProgress = localStorage.getItem('gameProgress');
+    const savedProgress = storageManager.getItem('gameProgress');
     if (savedProgress) {
       this.progress = JSON.parse(savedProgress);
     }
@@ -1468,8 +1533,8 @@ const achievementsManager = {
   },
   
   save() {
-    localStorage.setItem('achievements', JSON.stringify(this.achievements));
-    localStorage.setItem('gameProgress', JSON.stringify(this.progress));
+    storageManager.setItem('achievements', JSON.stringify(this.achievements));
+    storageManager.setItem('gameProgress', JSON.stringify(this.progress));
   },
   
   checkAchievements(game, value) {
@@ -1565,10 +1630,21 @@ const achievementsManager = {
       });
     }
     
+    if (game === 'invaders' && value > this.progress.invadersBest) {
+      this.progress.invadersBest = value;
+      this.achievements.invaders.forEach(ach => {
+        if (!ach.unlocked && value >= ach.points) {
+          ach.unlocked = true;
+          newUnlocks.push(ach.name);
+        }
+      });
+    }
+    
     if (newUnlocks.length > 0) {
       newUnlocks.forEach(name => {
         showNotification(`🏆 Osiągnięcie: ${name}!`);
       });
+      if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#FFA500'] });
     }
     
     this.save();
@@ -1585,7 +1661,8 @@ const achievementsManager = {
       'marioBest': this.progress.marioBest || 0,
       'racingBest': this.progress.racingBest || 0,
       'tetrisBest': this.progress.tetrisBest || 0,
-      'breakoutBest': this.progress.breakoutBest || 0
+      'breakoutBest': this.progress.breakoutBest || 0,
+      'invadersBest': this.progress.invadersBest || 0
     };
     
     Object.entries(updates).forEach(([id, value]) => {
@@ -1601,7 +1678,7 @@ const achievementsManager = {
       const gameIcons = {
         snake: '🐍', pong: '🏓', wordle: '🔤', simon: '🎵',
         duck: '🦆', mario: '🍄', racing: '🏎️',
-        tetris: '🧩', breakout: '🔨'
+        tetris: '🧩', breakout: '🔨', invaders: '👾'
       };
       
       html += `
@@ -1636,7 +1713,7 @@ const achievementsManager = {
     this.progress = {
       snakeBest: 0, pongBest: 0, wordleSolved: 0, simonBest: 0,
       duckBest: 0, marioBest: 0, racingBest: 0,
-      tetrisBest: 0, breakoutBest: 0
+      tetrisBest: 0, breakoutBest: 0, invadersBest: 0
     };
     this.save();
     this.updateDisplay();
@@ -1776,6 +1853,7 @@ function uiStart(game) {
       case 'racing': initRacing(); break;
       case 'tetris': initTetris(); break;
       case 'breakout': initBreakout(); break;
+      case 'invaders': initInvaders(); break;
     }
   });
 }
@@ -1851,7 +1929,7 @@ function resetAllProgress() {
 
 function openShop() {
   // Odśwież stan monet przed otwarciem sklepu
-  const saved = localStorage.getItem('levelRewards');
+  const saved = storageManager.getItem('levelRewards');
   if (saved) {
     const data = JSON.parse(saved);
     if (data.coins !== undefined) {
@@ -1889,7 +1967,7 @@ const themeManager = {
   currentTheme: 'dark',
   
   init() {
-    const saved = localStorage.getItem('theme');
+    const saved = storageManager.getItem('theme');
     if (saved) {
       this.currentTheme = saved;
       this.applyTheme();
@@ -1899,7 +1977,7 @@ const themeManager = {
   toggle() {
     this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
     this.applyTheme();
-    localStorage.setItem('theme', this.currentTheme);
+    storageManager.setItem('theme', this.currentTheme);
   },
   
   applyTheme() {
@@ -2023,7 +2101,7 @@ function initializeMissingElements() {
     if (window.levelRewardsSystem) {
       // Wymuś aktualizację monet
       const coins = levelRewardsSystem.coins;
-      const saved = localStorage.getItem('levelRewards');
+      const saved = storageManager.getItem('levelRewards');
       if (saved) {
         const data = JSON.parse(saved);
         if (data.coins !== undefined) {
@@ -2416,17 +2494,7 @@ document.addEventListener('DOMContentLoaded', () => {
   achievementsManager.updateDisplay();
   
   // Sprawdź czy wszystko działa
-  console.log("✅ Wszystkie systemy zainicjalizowane");
-  console.log("🎮 Dostępne funkcje gry:");
-  console.log("- Snake: ", typeof initSnake);
-  console.log("- Mario: ", typeof initMario);
-  console.log("- Racing: ", typeof initRacing);
-  console.log("- Tetris: ", typeof initTetris);
-  console.log("- Pong: ", typeof initPong);
-  console.log("- Duck Hunt: ", typeof initDuck);
-  console.log("- Breakout: ", typeof initBreakout);
-  console.log("- Simon: ", typeof initSimon);
-  console.log("- Wordle: ", typeof wordleGame.init);
+  console.log("✅ Gaming Hub - Ready");
   
   showNotification('🎮 Gaming Hub - Ultimate Edition!');
 });

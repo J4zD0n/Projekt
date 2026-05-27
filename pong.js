@@ -14,13 +14,26 @@ function initPong() {
     player: { y: 110, score: 0, speed: difficulty.playerSpeed },
     ai: { y: 110, score: 0, speed: difficulty.aiSpeed },
     paddleHeight: 80,
-    paddleWidth: 15
+    paddleWidth: 15,
+    baseBallSpeed: difficulty.ballSpeed,
+    maxBallSpeed: difficulty.ballSpeed * 2.5 // Limit max 2.5x bazowej prędkości
   };
   
   gameStateManager.currentGameLoop = setInterval(() => {
     updatePong();
     drawPong();
   }, 1000 / 60);
+}
+
+function resetPongBall() {
+  // Reset piłki na środek z bazową prędkością + losowy kierunek
+  const dir = Math.random() > 0.5 ? 1 : -1;
+  const angle = (Math.random() - 0.5) * 0.8; // Lekki losowy kąt
+  pongGame.ball.x = 300;
+  pongGame.ball.y = 150;
+  pongGame.ball.dx = pongGame.baseBallSpeed * dir;
+  pongGame.ball.dy = pongGame.baseBallSpeed * (0.5 + Math.abs(angle)) * (angle > 0 ? 1 : -1);
+  pongGame.trail = [];
 }
 
 function updatePong() {
@@ -50,8 +63,15 @@ function updatePong() {
     
     let hitPoint = (pongGame.ball.y - pongGame.player.y) / 80;
     pongGame.ball.dy = (hitPoint - 0.5) * 10;
-    pongGame.ball.dx = Math.abs(pongGame.ball.dx) * 1.05;
+    let newDx = Math.abs(pongGame.ball.dx) * 1.05;
+    // Limituj prędkość
+    newDx = Math.min(newDx, pongGame.maxBallSpeed);
+    pongGame.ball.dx = newDx;
     pongGame.ball.x = 26; // Odsuń piłkę od paletki
+    // Limituj dy też
+    if (Math.abs(pongGame.ball.dy) > pongGame.maxBallSpeed) {
+      pongGame.ball.dy = Math.sign(pongGame.ball.dy) * pongGame.maxBallSpeed;
+    }
     pongGame.shakeAmount = 3;
     soundSystem.play('jump');
   }
@@ -64,16 +84,22 @@ function updatePong() {
     
     let hitPoint = (pongGame.ball.y - pongGame.ai.y) / 80;
     pongGame.ball.dy = (hitPoint - 0.5) * 10;
-    pongGame.ball.dx = -Math.abs(pongGame.ball.dx) * 1.05;
+    let newDx = -Math.abs(pongGame.ball.dx) * 1.05;
+    // Limituj prędkość
+    newDx = -Math.min(Math.abs(newDx), pongGame.maxBallSpeed);
+    pongGame.ball.dx = newDx;
     pongGame.ball.x = 574; // Odsuń piłkę od paletki
+    // Limituj dy też
+    if (Math.abs(pongGame.ball.dy) > pongGame.maxBallSpeed) {
+      pongGame.ball.dy = Math.sign(pongGame.ball.dy) * pongGame.maxBallSpeed;
+    }
     pongGame.shakeAmount = 3;
     soundSystem.play('jump');
   }
   
   if (pongGame.ball.x < 0) {
     pongGame.ai.score++;
-    pongGame.ball.x = 300;
-    pongGame.ball.y = 150;
+    resetPongBall();
   }
   if (pongGame.ball.x > 600) {
     pongGame.player.score++;
@@ -81,8 +107,7 @@ function updatePong() {
     levelSystem.addXP(5);
     dailyChallengeSystem.updateProgress('pong', pongGame.player.score);
     soundSystem.play('collect');
-    pongGame.ball.x = 300;
-    pongGame.ball.y = 150;
+    resetPongBall();
   }
   
   if (pongGame.ball.y < pongGame.ai.y + 40) {

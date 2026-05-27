@@ -337,6 +337,33 @@
           </div>
         </div>
 
+        <!-- Space Invaders Game Card -->
+        <div class="game-tile">
+          <div class="game-cover invaders-cover">
+            <div class="game-cover-art">
+              <div class="cover-icon">👾</div>
+              <div class="cover-gradient"></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <h3 class="game-name">Space Invaders</h3>
+            <div class="game-meta">
+              <span class="meta-badge">Arcade</span>
+              <span class="meta-score">★ <span id="invadersBest">0</span></span>
+            </div>
+            <p class="game-desc">Obroń Ziemię przed obcymi</p>
+            <div class="game-card-actions">
+              <button class="play-button" onclick="uiStart('invaders')">
+                <span class="play-icon">▶</span>
+                <span>Graj</span>
+              </button>
+              <button class="tutorial-btn" onclick="showTutorial('invaders')" title="Jak grać?">
+                <span>❔ Poradnik</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -571,6 +598,10 @@
               <span class="stat-label">Breakout</span>
               <span class="stat-value" id="profileBreakoutBest">0</span>
             </div>
+            <div class="stat-item">
+              <span class="stat-label">Space Invaders</span>
+              <span class="stat-value" id="profileInvadersBest">0</span>
+            </div>
           </div>
         </div>
       </div>
@@ -790,6 +821,21 @@
     </div>
   </div>
 
+  <!-- Space Invaders Game -->
+  <div id="invadersGame" class="game-screen">
+    <div class="game-screen-header">
+      <h2>👾 Space Invaders</h2>
+    </div>
+    <div class="game-controls-info">Sterowanie: Strzałki A/D, SPACJA = strzał | ESC = Pauza</div>
+    <div class="game-score" id="invadersScore">Wynik: 0 | Życia: 3 | Poziom: 1</div>
+    <canvas id="invadersCanvas" width="600" height="500"></canvas>
+    <div class="game-actions">
+      <button class="action-btn info" onclick="showTutorial('invaders')">❔ Poradnik</button>
+      <button class="action-btn secondary" onclick="resetInvaders()">Restart</button>
+      <button class="action-btn primary" onclick="backToMenu()">Menu</button>
+    </div>
+  </div>
+
   <!-- XP Level Up Notification -->
   <div id="levelUpNotification" class="level-up-popup hidden">
     <div class="level-up-content">
@@ -829,16 +875,18 @@
 
   <div class="notification" id="notification"></div>
 
-  <!-- Load all JavaScript files -->
-  <script src="javascript.js"></script>
-  <script src="snake.js"></script>
-  <script src="pong.js"></script>
-  <script src="wordle.js"></script>
-  <script src="simon.js"></script>
-  <script src="duck.js"></script>
-  <script src="mario.js"></script>
-  <script src="racing.js"></script>
-  <script src="tetris.js"></script>
-  <script src="breakout.js"></script>
+  <!-- Load all JavaScript files with defer for better performance -->
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script defer src="javascript.js"></script>
+  <script defer src="snake.js"></script>
+  <script defer src="pong.js"></script>
+  <script defer src="wordle.js"></script>
+  <script defer src="simon.js"></script>
+  <script defer src="duck.js"></script>
+  <script defer src="mario.js"></script>
+  <script defer src="racing.js"></script>
+  <script defer src="tetris.js"></script>
+  <script defer src="breakout.js"></script>
+  <script defer src="invaders.js"></script>
 </body>
 </html>

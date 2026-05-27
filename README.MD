@@ -301,12 +301,12 @@
 Wersja v0.70 przynosi ogromne zmiany optymalizacyjne w strukturze kodu oraz znaczące ulepszenia dla końcowego użytkownika (UI/UX).
 
 ### 🐛 Refaktoryzacja i Architektura (Backend/Skrypty)
-- **Modularyzacja kodu:** Gigantyczny plik [javascript.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v50/javascript.js:0:0-0:0) został podzielony tematycznie. Każda z 9 gier posiada teraz swój dedykowany, wyizolowany moduł (np. [snake.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v0.70/snake.js:0:0-0:0), [duck.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v0.70/duck.js:0:0-0:0), [mario.js](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v0.70/mario.js:0:0-0:0)), co drastycznie poprawia czytelność kodu, ułatwia jego rozwój i ładowanie.
+- **Modularyzacja kodu:** Gigantyczny plik javascript.js został podzielony tematycznie. Każda z 9 gier posiada teraz swój dedykowany, wyizolowany moduł (np. snake.js, duck.js, mario.js), co drastycznie poprawia czytelność kodu, ułatwia jego rozwój i ładowanie.
 - **Skalowalność:** Nowa architektura w naturalny sposób przygotowuje grunt pod dodawanie kolejnych gier bez obciążania głównego wątku aplikacji.
 ### 🎨 Zmiany w Interfejsie (UI/UX)
 - **Modern HUD (Heads-Up Display):** Zaimplementowano całkowicie nowy, kinowy HUD w trakcie rozgrywki (szczególnie widoczny w grze _Duck Hunt_). Postępy, celność i zdobyte punkty są teraz płynnie animowane nad elementem Canvas.
 - **Przyciski "Poradnik" (Tutorials):** Do każdej gry w bibliotece wprowadzono interaktywny przycisk pomocy ("Poradnik"), który przed uruchomieniem Canvasa tłumaczy nowym graczom zasady i sterowanie w danej grze.
-- **Zaawansowane arkusze stylów:** Plik [style.css](cci:7://file:///c:/Users/user/OneDrive%20-%20Szko%C5%82a%20Podstawowa%20im.%20M.%20Konopnickiej%20w%20Dziekanowie%20Le%C5%9Bnym/Pulpit/Janek/2ap/PROJOP/v50/style.css:0:0-0:0) został zaktualizowany (jego rozmiar wzrósł o blisko 40%), wprowadzając nowe przejścia (transitions), palety kolorów i wsparcie dla nowych modali oraz podglądów poziomów trudności.
+- **Zaawansowane arkusze stylów:** Plik style.css został zaktualizowany (jego rozmiar wzrósł o blisko 40%), wprowadzając nowe przejścia (transitions), palety kolorów i wsparcie dla nowych modali oraz podglądów poziomów trudności.
 ### 📜 Licencja i Środowisko Produkcyjne
 Zgodnie z wymogami środowiska produkcyjnego dla projektów open-source, aplikacja docelowo operuje w oparciu o popularną, otwartą licencję **MIT**, w pełni pozwalając na jej komercyjne użycie, modyfikowanie kodu oraz swobodną dystrybucję w celach edukacyjnych.
 
@@ -314,14 +314,55 @@ Zgodnie z wymogami środowiska produkcyjnego dla projektów open-source, aplikac
 Wersja v0.85 skupia się na zapewnieniu najwyższej jakości kodu poprzez wdrożenie kompleksowego systemu testowego oraz dokumentacji technicznej procesu weryfikacji.
 
 ### 🧪 System Testów Automatycznych
-- **Dashboard Testowy:** Stworzono dedykowane narzędzie [testy.html](testy.html), które pozwala na błyskawiczne uruchomienie testów jednostkowych w przeglądarce.
-- **Testy Jednostkowe (Unit Tests):** Implementacja skryptu [testy.js](testy.js) weryfikującego krytyczne moduły gry (fizyka Pong, mechanika Snake, system XP).
+- **Dashboard Testowy:** Stworzono dedykowane narzędzie testy.html, które pozwala na błyskawiczne uruchomienie testów jednostkowych w przeglądarce.
+- **Testy Jednostkowe (Unit Tests):** Implementacja skryptu testy.js weryfikującego krytyczne moduły gry (fizyka Pong, mechanika Snake, system XP).
 - **Izolacja Środowiska:** Zastosowano system "mockowania" globalnych obiektów gry, co pozwala na stabilne testowanie logiki bez konieczności ładowania całego interfejsu UI.
 
 ### 📋 Dokumentacja i Metodyka
-- **Dokumentacja Testów:** Przygotowano szczegółowy raport [Dokumentacja_Testow.md](Dokumentacja_Testow.md) zawierający plan testów, wybrane metodyki oraz wyniki weryfikacji.
+- **Dokumentacja Testów:** Przygotowano szczegółowy raport Dokumentacja_Testow.md zawierający plan testów, wybrane metodyki oraz wyniki weryfikacji.
 - **Testy Funkcjonalne:** Przeprowadzono manualną weryfikację wszystkich ścieżek krytycznych użytkownika (User Flows).
 
 ### 🛠️ Weryfikacja i Poprawki (Bugfixes)
-- **Anti-Tunnelling w Pong:** Na podstawie wyników testów usprawniono detekcję kolizji w [pong.js](pong.js). Dodano mechanizm "wypychania" piłki, co eliminuje błąd przenikania przez paletki przy bardzo dużych prędkościach.
+- **Anti-Tunnelling w Pong:** Na podstawie wyników testów usprawniono detekcję kolizji w pong.js. Dodano mechanizm "wypychania" piłki, co eliminuje błąd przenikania przez paletki przy bardzo dużych prędkościach.
 - **Stabilność Inputu:** Zoptymalizowano obsługę klawiatury, zapewniając płynniejsze przejścia między różnymi trybami gry.
+
+## Wersja v1.00 - Etap 8: Finałowa Odsłona
+Wersja v1.00 przynosi mnóstwo ulepszeń wizualnych, mechanicznych oraz naprawia najpoważniejsze zgłoszone luki w mechanikach gier, finalizując w ten sposób pełny produkt "Gaming Hub".
+
+### 🚀 Space Invaders - Visual Overhaul & Tutorial
+- **Grafika gracza (Statku):** Statek to nie tylko prosty trójkąt, lecz szczegółowo wyrenderowany pojazd posiadający kadłub ze skrzydłami i podświetlony na cyjanowo kokpit. Posiada on również animowany, pulsujący system silnikowy.
+- **Pixelo-za wrogach:** Każdy z kosmitów doczekał się liftingu, zyskując unikalny wygląd bazujący na stylu retro "pixel-art". Bossy mają teraz rogi i świecące oczy, podczas gdy słabsi kosmici posiadają machające macki i mrugające obiekty.
+- **System Poradnika:** Znacząco rozszerzono zawartość w menu pomocy. Zamiast dwóch linijek gracze mogą teraz obejrzeć szczegółowy animowany poradnik tłumaczący punktację za każdego rodzaju kosmitę (10/20/40 pkt) oraz udzielający praktycznych porad.
+
+### 🏓 Pong - Extreme Difficulty Bugfix
+- **Naprawa nieskończonego przyspieszenia:** Na najwyższym poziomie trudności "Ekspert" (a także "Hard"), piłka przy każdym odbiciu od paletki mogła nieskończenie nabierać prędkości, przebijając barierę dźwięku. Zostało to załatane: wprowadzono twardy limit (`maxBallSpeed`), a zdobycie (lub strata) punktu całkowicie resetuje piłkę z powrotem do jej początkowych wartości konfiguracji z delikatnie losowym odchyleniem kąta. 
+
+### 🍄 Mini Mario - Realistyczna Fizyka ("Momentum Update")
+- **Większe podobieństwo do klasyki:** Stary model przesuwania o stałą prędkość (linear lerp) został całkowicie napisany od nowa na system przyspieszenia (acceleration) oraz tarcia (friction).
+- **Akceleracja:** Mario zaczyna biec wolno, aby następnie wejść w maksymalną prędkość (`maxSpeed`). Zaprzestanie chodzenia wytraca prędkość z odpowiednim tarciem (brak natychmiastowego zatrzymywania).
+- **Variable Jump & Coyote Time:** Mario skacze wyżej gdy klawisz skoku jest przytrzymany dłużej (puszczenie klawisza szybciej obcina pęd wertykalny). Użytkownik ma również kilka klatek opóźnienia na skok tuż po zsunięciu się z platformy, na rzecz polepszenia UX.
+- **Inne opory aerodynamiczne:** W locie kontrolowanie Mario różni się (ma inny promień tarcia) w przeciwieństwie do bycia na powierzchni płaskiej.
+
+### 🧱 Breakout - Różnorodne Poziomy
+- **Brak nudy proceduralnej:** Wcześniej, każdy poziom gry Breakout był tą samą wielką prostokątną ścianą, z dodawanym nowym rzędem do góry. Zostało to zastąpione przez dynamiczny system generacji 7 różnych wzorów map. 
+- **Wzory Klocków:** Gracze mogą teraz uświadczyć w grze takich wzorów map jak Piramida, Diament (krzyż/gwiazda), Naprzemienne paski, Szachownica a nawet kształt fortecy z podwyższonymi "wieżami" obronnymi. Wzory map rotują wraz z poziomami w sposób cykliczny.
+- **Kolory tematyczne:** Każdy poziom i wzór podsiada teraz pasujące ze sobą tematyczne schematy kolorów (Tęcza, Neonowy, Ognisty itd).
+- **HP Klocków (Multi-hit blocks):** Zaprogramowano klocki mogące utrzymać do 3 trafień, ukazujące swój wskaźnik obrażeń ciemniejąc podczas rozbijania, wyświetlające liczby ("2", "3") i popękane zarysy. 
+
+### 🐛 Inne poprawki do systemu
+- **Poprawa UI (Gwiazdka):** Wyświetlanie numeru obecnego poziomu gracza zaraz obok gwiazdki w panelu głównym nagłówka, nie posiadało zdefiniowanego na biało koloru. Cyfra wtapiała się ze swym nadrzędnym tłem w CSS. Nadano nową klasę `.level-number` wymuszającą wysoką czytelność elementu.
+- **Optymalizacja Snake'a:** Oczyszczenie przestarzałych przypisań i resztek zmiennych do obsługi widoku w `snake.js` po migracji architektonicznej.
+
+### 🐍 Snake - Decoupling (Rozdzielenie Renderowania)
+- **Problem z klatkowaniem:** Do tej pory ekran renderował się z tą samą częstotliwością, co tyknięcia zegara logiki węża (np. 6 razy na sekundę na łatwym poziomie), co powodowało ostre cięcia animacji, skakanie trzęsącego się ekranu i niepłynne pulsowanie.
+- **Rozwiązanie (60 FPS):** Główna pętla gry została napisana od nowa. Od teraz logika kratkowa i poruszanie się węża zachodzi asynchronicznie, zachowując swój własny timer, podczas gdy odrysowanie grafiki na Canvas, wraz z przesuwaniem napisów Combo oraz cieniami i wibracjami ekranu, aktualizuje się sztywno 60 razy na sekundę (`1000/60`). Gra jest teraz niesamowicie płynna i lekka.
+- **Optymalizacja wydajności:** Usunięto zasobożerne na procesor operacje `shadowBlur` z API 2D Canvas zastępując poświatę i "glow" specjalnych jabłek poprzez półprzezroczyste okręgi rysowane za pomocą kanału alfa (`rgba()`).
+
+### 🍄 Mini Mario - Lifting i Płynność
+- **Aktualizacja Grafiki Postaci:** Kwadratowy model przypominający postać z Minecrafta został odrzucony. Mario zyskał zupełnie nowy, dopracowany wygląd zbudowany na bazie krzywych (`arc`, `roundRect`): Posiada łuki i zaokrągloną czapkę, wyraźne ręce, dłonie, okrągły nosek i mieniące się guziki u ogrodniczek.
+- **Animacje:** Dodano animację przebierania nóżkami (chód oparty na sinusoidzie), kiedy postać się porusza.
+- **Szlif Fizyki:** Skorygowano wcześniej zaimplementowaną grawitację zmniejszając przyśpieszenie, obniżając maksymalną prędkość i wygładzając tarcie z ziemią (`groundFriction`). Dzięki temu postać porusza się jak w prawdziwym starym Mario – o wiele łagodniej, bez rażących przyśpieszeń z denerwującym, bezwładnym oporem zjazdowym.
+
+### 🎨 Ogólne poprawki UI
+- **Menu Gier:** Dodano poprawną siatkę Flexbox do kafelków kart gier (Klasy CSS `.game-tile` i `.game-info`). Przyciski "Graj" i "Poradnik" w różniących się długościami opisów kafelków są już sztywno wyrównane do dołu – kafelki stały się równe i estetyczne.
+- **Przyciski w Canvas:** Zaktualizowano wygląd topornych przycisków w samej grze Mini Mario (Takich jak *Wybierz Poziom*, czy przycisków w menu *Level Complete*). Otrzymały one zaokrąglenia rogów oraz ładne cieniowane gradienty koloru.

@@ -420,7 +420,7 @@ function updateMario(deltaTime) {
     return;
   }
   
-  // Sterowanie
+  // Sterowanie — fizyka inspirowana Mario
   let targetVelocityX = 0;
   
   mario.isCrouching = (inputHandler.isPressed('down') || inputHandler.isPressed('s'));
@@ -432,22 +432,56 @@ function updateMario(deltaTime) {
     mario.height = 40;
   }
   
-  if ((inputHandler.isPressed('left') || inputHandler.isPressed('a')) && !mario.isCrouching) {
-    targetVelocityX = -mario.speed;
-    mario.facingRight = false;
-  } else if ((inputHandler.isPressed('right') || inputHandler.isPressed('d')) && !mario.isCrouching) {
-    targetVelocityX = mario.speed;
-    mario.facingRight = true;
+  // Coyote time — czas po spadnięciu z platformy w którym jeszcze można skoczyć
+  if (!mario.coyoteTimer) mario.coyoteTimer = 0;
+  if (mario.onGround) {
+    mario.coyoteTimer = 6; // ~100ms (6 klatek)
+  } else if (mario.coyoteTimer > 0) {
+    mario.coyoteTimer--;
   }
   
-  mario.velocityX += (targetVelocityX - mario.velocityX) * 0.2;
+  // Acceleration/Deceleration system
+  const acceleration = 0.25;     // Przyspieszenie (bardzo płynne)
+  const maxSpeed = 4.5;          // Maksymalna prędkość (umiarkowana)
+  const groundFriction = 0.88;   // Tarcie na ziemi (zbalansowane - Mario ma delikatny poślizg)
+  const airFriction = 0.95;      // Tarcie w powietrzu
+  const airAccelMult = 0.7;      // Mnożnik przyspieszenia w powietrzu
   
-  // Skok
-  if ((inputHandler.isPressed('space') || inputHandler.isPressed('up') || inputHandler.isPressed('w')) && 
-      mario.onGround && mario.canJump && !mario.isCrouching) {
+  const isOnGround = mario.onGround || mario.coyoteTimer > 0;
+  const accel = isOnGround ? acceleration : acceleration * airAccelMult;
+  
+  if ((inputHandler.isPressed('left') || inputHandler.isPressed('a')) && !mario.isCrouching) {
+    if (mario.velocityX > 0 && isOnGround) mario.velocityX *= 0.5; // Szybki nawrót
+    mario.velocityX -= accel;
+    mario.facingRight = false;
+  } else if ((inputHandler.isPressed('right') || inputHandler.isPressed('d')) && !mario.isCrouching) {
+    if (mario.velocityX < 0 && isOnGround) mario.velocityX *= 0.5; // Szybki nawrót
+    mario.velocityX += accel;
+    mario.facingRight = true;
+  } else {
+    // Tarcie — hamowanie gdy nie naciskamy klawiszy
+    if (isOnGround) {
+      mario.velocityX *= groundFriction;
+    } else {
+      mario.velocityX *= airFriction;
+    }
+  }
+  
+  // Limit prędkości
+  if (mario.velocityX > maxSpeed) mario.velocityX = maxSpeed;
+  if (mario.velocityX < -maxSpeed) mario.velocityX = -maxSpeed;
+  
+  // Zatrzymaj gdy prędkość jest bardzo mała
+  if (Math.abs(mario.velocityX) < 0.1) mario.velocityX = 0;
+  
+  // Skok — z variable jump height i coyote time
+  const jumpPressed = inputHandler.isPressed('space') || inputHandler.isPressed('up') || inputHandler.isPressed('w');
+  
+  if (jumpPressed && (mario.coyoteTimer > 0) && mario.canJump && !mario.isCrouching) {
     mario.velocityY = mario.jumpPower;
     mario.onGround = false;
     mario.canJump = false;
+    mario.coyoteTimer = 0; // Zużyj coyote time
     
     // Kurz przy skoku
     if (!marioGame.particles) marioGame.particles = [];
@@ -465,7 +499,12 @@ function updateMario(deltaTime) {
     soundSystem.play('jump');
   }
   
-  if (!inputHandler.isPressed('space') && !inputHandler.isPressed('up') && !inputHandler.isPressed('w')) {
+  // Variable jump — puść wcześniej = niższy skok (cut jump)
+  if (!jumpPressed && mario.velocityY < -4) {
+    mario.velocityY = -4; // Ograniczenie wzlotu po puszczeniu
+  }
+  
+  if (!jumpPressed) {
     mario.canJump = true;
   }
   
@@ -972,48 +1011,101 @@ function drawMario() {
   const my = mario.y;
   
   if (mx + mario.width > 0 && mx < 600) {
-    // Buty
+    // Ręce (Koszula)
     ctx.fillStyle = '#E52521';
-    ctx.fillRect(mx, my + mario.height - 10, mario.width, 10);
+    // Lewa ręka
+    ctx.beginPath();
+    ctx.roundRect(mx + 2, my + 16, 8, 12, 3);
+    ctx.fill();
+    // Prawa ręka
+    ctx.beginPath();
+    ctx.roundRect(mx + mario.width - 10, my + 16, 8, 12, 3);
+    ctx.fill();
     
-    // Spodnie
+    // Dłonie
+    ctx.fillStyle = '#FFCC99';
+    ctx.beginPath();
+    ctx.arc(mx + 6, my + 28, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(mx + mario.width - 6, my + 28, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ciało (Spodnie ogrodniczki)
     ctx.fillStyle = '#1E90FF';
-    ctx.fillRect(mx, my + 25, mario.width, mario.height - 35);
+    ctx.beginPath();
+    ctx.roundRect(mx + 6, my + 18, mario.width - 12, 16, 4);
+    ctx.fill();
     
-    // Koszula
-    ctx.fillStyle = '#E52521';
-    ctx.fillRect(mx + 5, my + 15, mario.width - 10, 10);
-    
+    // Złote guziki ogrodniczek
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(mx + 10, my + 22, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(mx + mario.width - 10, my + 22, 2, 0, Math.PI * 2);
+    ctx.fill();
+
     // Głowa
     ctx.fillStyle = '#FFCC99';
-    ctx.fillRect(mx + 5, my, mario.width - 10, 15);
-    
+    ctx.beginPath();
+    ctx.arc(mx + mario.width / 2, my + 10, 10, 0, Math.PI * 2);
+    ctx.fill();
+
     // Czapka
     ctx.fillStyle = '#E52521';
-    ctx.fillRect(mx + 3, my - 5, mario.width - 6, 10);
-    ctx.fillRect(mx + mario.width/2 - 10, my - 10, 20, 8);
+    ctx.beginPath();
+    ctx.arc(mx + mario.width / 2, my + 6, 10, Math.PI, 0); // Półkole
+    ctx.fill();
     
-    // Włosy
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(mx + 8, my + 2, mario.width - 16, 3);
+    // Daszek czapki
+    if (mario.facingRight) {
+      ctx.fillRect(mx + mario.width / 2, my + 5, 12, 3);
+    } else {
+      ctx.fillRect(mx + mario.width / 2 - 12, my + 5, 12, 3);
+    }
     
+    // Nos
+    ctx.fillStyle = '#FFB380';
+    ctx.beginPath();
+    if (mario.facingRight) {
+      ctx.arc(mx + mario.width / 2 + 10, my + 12, 4, 0, Math.PI * 2);
+    } else {
+      ctx.arc(mx + mario.width / 2 - 10, my + 12, 4, 0, Math.PI * 2);
+    }
+    ctx.fill();
+
     // Oczy
-    ctx.fillStyle = '#1E90FF';
+    ctx.fillStyle = '#000000';
     if (mario.facingRight) {
-      ctx.fillRect(mx + 10, my + 4, 4, 4);
-      ctx.fillRect(mx + 16, my + 4, 4, 4);
+      ctx.fillRect(mx + mario.width / 2 + 3, my + 8, 2, 4);
     } else {
-      ctx.fillRect(mx + mario.width - 14, my + 4, 4, 4);
-      ctx.fillRect(mx + mario.width - 20, my + 4, 4, 4);
+      ctx.fillRect(mx + mario.width / 2 - 5, my + 8, 2, 4);
     }
+
+    // Wąsy
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    if (mario.facingRight) {
+      ctx.ellipse(mx + mario.width / 2 + 7, my + 15, 6, 2.5, 0, 0, Math.PI * 2);
+    } else {
+      ctx.ellipse(mx + mario.width / 2 - 7, my + 15, 6, 2.5, 0, 0, Math.PI * 2);
+    }
+    ctx.fill();
     
-    // Wąs
-    ctx.fillStyle = '#8B4513';
-    if (mario.facingRight) {
-      ctx.fillRect(mx + 10, my + 8, 12, 2);
-    } else {
-      ctx.fillRect(mx + mario.width - 22, my + 8, 12, 2);
-    }
+    // Nogi i buty z animacją chodzenia
+    const isMoving = Math.abs(mario.velocityX) > 0.5 && mario.onGround;
+    const walkOffset = isMoving ? Math.sin(Date.now() / 80) * 4 : 0;
+    
+    ctx.fillStyle = '#8B4513'; // Brązowe buty
+    // Lewa noga
+    ctx.beginPath();
+    ctx.roundRect(mx + 6, my + 34 - walkOffset, 9, 6, 2);
+    ctx.fill();
+    // Prawa noga
+    ctx.beginPath();
+    ctx.roundRect(mx + mario.width - 15, my + 34 + walkOffset, 9, 6, 2);
+    ctx.fill();
   }
   
   // HUD
@@ -1044,11 +1136,19 @@ function drawMario() {
   ctx.textAlign = 'left';
   
   // Przycisk "Wybierz Poziom"
-  ctx.fillStyle = 'rgba(255, 140, 0, 0.9)';
-  ctx.fillRect(250, 10, 120, 35);
-  ctx.strokeStyle = '#FFFFFF';
+  const topBtnGrad = ctx.createLinearGradient(0, 10, 0, 45);
+  topBtnGrad.addColorStop(0, '#FFB347');
+  topBtnGrad.addColorStop(1, '#FF8C00');
+  
+  ctx.fillStyle = topBtnGrad;
+  ctx.beginPath();
+  ctx.roundRect(240, 10, 140, 35, 8);
+  ctx.fill();
+  
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
   ctx.lineWidth = 2;
-  ctx.strokeRect(250, 10, 120, 35);
+  ctx.stroke();
+  
   ctx.fillStyle = '#FFFFFF';
   ctx.font = 'bold 14px Arial';
   ctx.textAlign = 'center';
@@ -1076,15 +1176,37 @@ function drawMario() {
     const hasNextLevel = nextLevelId <= marioLevels.length;
     
     if (hasNextLevel) {
-      ctx.fillStyle = '#0070f3';
-      ctx.fillRect(200, 300, 200, 45);
+      const nextBtnGrad = ctx.createLinearGradient(0, 300, 0, 345);
+      nextBtnGrad.addColorStop(0, '#4facfe');
+      nextBtnGrad.addColorStop(1, '#00f2fe');
+      
+      ctx.fillStyle = nextBtnGrad;
+      ctx.beginPath();
+      ctx.roundRect(200, 300, 200, 45, 10);
+      ctx.fill();
+      
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 20px Arial';
       ctx.fillText(`POZIOM ${nextLevelId}`, 300, 330);
     }
     
-    ctx.fillStyle = '#FF8C00';
-    ctx.fillRect(200, 360, 200, 45);
+    const menuBtnGrad = ctx.createLinearGradient(0, 360, 0, 405);
+    menuBtnGrad.addColorStop(0, '#f6d365');
+    menuBtnGrad.addColorStop(1, '#fda085');
+    
+    ctx.fillStyle = menuBtnGrad;
+    ctx.beginPath();
+    ctx.roundRect(200, 360, 200, 45, 10);
+    ctx.fill();
+    
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 20px Arial';
     ctx.fillText('WYBÓR POZIOMU', 300, 390);
